@@ -1240,6 +1240,22 @@ int main(){
 		}
 		middle2 = clock();
 		excute_time[e] = (double)(middle2 - middle1)/ CLOCKS_PER_SEC;
+		fpWrite = fopen("experiment.txt", "a+");
+		printf("success_num:%d\n",success_num);
+		fprintf(fpWrite,"success_num:%d\n",success_num);
+		printf("fail_num:%d\n",fail_num);
+		fprintf(fpWrite,"fail_num:%d\n",fail_num);
+		printf("out_time_num:%d\n",out_time_num);
+		fprintf(fpWrite,"out_time_num:%d\n",out_time_num);
+		printf("no_chain_num:%d\n",no_chain_num);
+		fprintf(fpWrite,"no_chain_num:%d\n",no_chain_num);
+		printf("more_chain_num:%d\n",more_chain_num);
+		fprintf(fpWrite,"more_chain_num:%d\n",more_chain_num);
+		printf("match_four_num:%d\n",match_four_num);
+		fprintf(fpWrite,"match_four_num:%d\n",match_four_num);
+		printf("invalid_error_num:%d\n",invalid_error_num);
+		fprintf(fpWrite,"invalid_error_num:%d\n",invalid_error_num);
+		fclose(fpWrite);
 	}
 	int sum = 0;
 	int max = 0;
