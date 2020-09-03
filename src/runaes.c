@@ -14,7 +14,7 @@
 #include "cvector.h"
 #include "time.h"
 
-#define Experment_num 100
+#define Experment_num 5
 #define Share_num 2
 #define Is_random 1  //控制是否随机明文、密钥和错误,调试用 1:表示随机 0:表示固定
 #define Is_print 1 //控制是否打印详细数据，1:表示打印，0:表示不打印
@@ -1081,7 +1081,10 @@ int recovery_10round_key(byte delta,byte differential_cipher_4_error[4][4],byte 
 	}
 	int re_vok = verify_offline_key(guess_key_10round,key_10round,w,candidiate_key_count,success_num,first_fail_num,cipher_verify,in,n,nt,base,reall_main_key,out_time_num);
 	if(re_vok == -1)
-		return -1;	
+		return -1;
+	else if(re_vok == -3){
+		return -3;
+	}	
 	return 1;
 }
 
@@ -1145,8 +1148,10 @@ int main(){
 	int all_encrypt_num[Experment_num];
 	double excute_time[Experment_num];//每次实验的执行时间，先不统计，因为现在还涉及读写文件，会消耗大量时间
 	int success_num = 0;//成功的次数
+	int second_success_num = 0;//第二次才成功的次数
+	int fail_num = 0;
 	int first_fail_num = 0;//第一次失败的次数
-	int second_fail_num = 0;//第二次失败的次数
+	int second_fail_num = 0;//第二次失败的次数,也就是总的失败次数
 	int appear_4_but_not_match = 0;//
 	int no_chain_num = 0;//找不到链的情况（继续找的情况）
 	int more_chain_num = 0;//匹配多条链的情况
@@ -1224,10 +1229,11 @@ int main(){
 		int diff_delta_count[4]={0,0,0,0};//记录一组差分值能够匹配几组delta
 		byte cipher_verify[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//验证的时候使用
 		all_encrypt_num[e] = encrypt_find_different(in,out,key,outex,n,nt,base,&delta,differential_cipher_4_error,dc,
-			relationship_delta_difference_cipher,diff_delta_count,&appear_4_but_not_match,&no_chain_num,&more_chain_num,&match_four_num,cipher_verify);			
+			relationship_delta_difference_cipher,diff_delta_count,&appear_4_but_not_match,&no_chain_num,&more_chain_num,
+			&match_four_num,cipher_verify);			
 		fpWrite = fopen("experiment.txt", "a+");
-		printf("first_encrypt_num:%d\n",all_encrypt_num[e]);
-		fprintf(fpWrite,"first_encrypt_num:%d\n",all_encrypt_num[e]);
+		printf("first_encrypt_num:%d\n\n",all_encrypt_num[e]);
+		fprintf(fpWrite,"first_encrypt_num:%d\n\n",all_encrypt_num[e]);
 		fclose(fpWrite);
 		byte guess_key_10round[16][16]={{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
 										{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -1242,9 +1248,29 @@ int main(){
 		int re_rk = recovery_10round_key(delta,differential_cipher_4_error,arr_delta,relationship_delta_difference_cipher,dc,
 			guess_key_10round,key_10round,w,diff_delta_count,&success_num,&first_fail_num,cipher_verify,in,n,nt,base,key,&out_time_num);
 		if(re_rk == -1){
-			
+			byte delta = 0;
+			byte differential_cipher_4_error[4][4]={0};
+			struct Different_Cipher dc[4];
+			int relationship_delta_difference_cipher[4][4] = {{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1}};//记录一组差分值对应第几组delta
+			int diff_delta_count[4]={0,0,0,0};//记录一组差分值能够匹配几组delta
+			byte cipher_verify[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//验证的时候使用
+			all_encrypt_num[e] += encrypt_find_different(in,out,key,outex,n,nt,base,&delta,differential_cipher_4_error,dc,
+				relationship_delta_difference_cipher,diff_delta_count,&appear_4_but_not_match,&no_chain_num,&more_chain_num,
+				&match_four_num,cipher_verify);	
+			byte guess_key_10round[16][16]={{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+										{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+										{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+										{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
+			byte key_10round[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//存放求得的第十轮子密钥
+			byte main_key[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//存放求得的初始密钥
+			byte delta2 = mult(2 , delta);
+			byte delta3 = mult(3 , delta);
+			byte arr_delta[4][4] = {{delta2,delta3,delta,delta},{delta,delta2,delta3,delta},
+				{delta,delta,delta2,delta3},{delta3,delta,delta,delta2}};
+			recovery_10round_key(delta,differential_cipher_4_error,arr_delta,relationship_delta_difference_cipher,dc,
+				guess_key_10round,key_10round,w,diff_delta_count,&second_success_num,&second_fail_num,cipher_verify,in,n,nt,base,key,&out_time_num);
 		}
-		recovery_main_key(key_10round,main_key);
+		//recovery_main_key(key_10round,main_key);
 		fpWrite = fopen("experiment.txt", "a+");
 		printf("second_encrypt_num:%d\n",all_encrypt_num[e]);
 		fprintf(fpWrite,"second_encrypt_num:%d\n",all_encrypt_num[e]);
@@ -1257,8 +1283,12 @@ int main(){
 		fpWrite = fopen("experiment.txt", "a+");
 		printf("success_num:%d\n",success_num);
 		fprintf(fpWrite,"success_num:%d\n",success_num);
+		printf("second_success_num:%d\n",second_success_num);
+		fprintf(fpWrite,"second_success_num:%d\n",second_success_num);
 		printf("first_fail_num:%d\n",first_fail_num);
 		fprintf(fpWrite,"first_fail_num:%d\n",first_fail_num);
+		printf("second_fail_num:%d\n",second_fail_num);
+		fprintf(fpWrite,"second_fail_num:%d\n",second_fail_num);
 		printf("out_time_num:%d\n",out_time_num);
 		fprintf(fpWrite,"out_time_num:%d\n",out_time_num);
 		printf("no_chain_num:%d\n",no_chain_num);
@@ -1293,8 +1323,12 @@ int main(){
 	fprintf(fpWrite,"平均需要加密%d次才能找到16个字节。\n最多需要%d次，最少需要%d次。\n",sum/Experment_num,max,min);
 	printf("success_num:%d\n",success_num);
 	fprintf(fpWrite,"success_num:%d\n",success_num);
+	printf("second_success_num:%d\n",second_success_num);
+	fprintf(fpWrite,"second_success_num:%d\n",second_success_num);
 	printf("first_fail_num:%d\n",first_fail_num);
 	fprintf(fpWrite,"first_fail_num:%d\n",first_fail_num);
+	printf("second_fail_num:%d\n",second_fail_num);
+	fprintf(fpWrite,"second_fail_num:%d\n",second_fail_num);
 	printf("out_time_num:%d\n",out_time_num);
 	fprintf(fpWrite,"out_time_num:%d\n",out_time_num);
 	printf("no_chain_num:%d\n",no_chain_num);

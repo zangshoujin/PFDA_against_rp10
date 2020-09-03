@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+/src/encrypt_state.txt
+/src/excute_time.txt
+/src/experiment.txt
