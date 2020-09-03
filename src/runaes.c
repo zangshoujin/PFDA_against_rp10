@@ -1079,7 +1079,7 @@ int recovery_10round_key(byte delta,byte differential_cipher_4_error[4][4],byte 
 			}
 		}
 	}
-	verify_offline_key(guess_key_10round,key_10round,w,candidiate_key_count,success_num,fail_num,cipher_verify,in,n,nt,base,reall_main_key,out_time_num);
+	int re_vok = verify_offline_key(guess_key_10round,key_10round,w,candidiate_key_count,success_num,fail_num,cipher_verify,in,n,nt,base,reall_main_key,out_time_num);
 	return 0;
 }
 
@@ -1134,11 +1134,11 @@ int test_key(byte in[16],byte out[16],byte key[16],byte outex[16],int n,int nt,i
 
 int main(){
 	clock_t start,middle1,middle2,finish;
-   	double  duration;
+   	double duration;
 	start = clock();
-  	int n=Share_num;//share的个数
+  	int n = Share_num;//share的个数
 	int base = 1;
-  	int nt=10;
+  	int nt = 10;
 	diff_table();
 	int all_encrypt_num[Experment_num];
 	double excute_time[Experment_num];//每次实验的执行时间，先不统计，因为现在还涉及读写文件，会消耗大量时间
