@@ -1324,8 +1324,8 @@ int main(){
 	fprintf(fpWrite,"share个数:%d\n",n);
 	printf("平均需要加密%d次才能找到16个字节。\n最多需要%d次，最少需要%d次。\n",sum/Experment_num,max,min);
 	fprintf(fpWrite,"平均需要加密%d次才能找到16个字节。\n最多需要%d次，最少需要%d次。\n",sum/Experment_num,max,min);
-	printf("success_num:%d\n",success_num);
-	fprintf(fpWrite,"success_num:%d\n",success_num);
+	printf("first_success_num:%d\n",first_success_num);
+	fprintf(fpWrite,"first_success_num:%d\n",first_success_num);
 	printf("second_success_num:%d\n",second_success_num);
 	fprintf(fpWrite,"second_success_num:%d\n",second_success_num);
 	printf("first_fail_num:%d\n",first_fail_num);
@@ -1334,6 +1334,8 @@ int main(){
 	fprintf(fpWrite,"second_fail_num:%d\n",second_fail_num);
 	printf("first_out_time_num:%d\n",first_out_time_num);
 	fprintf(fpWrite,"first_out_time_num:%d\n",first_out_time_num);
+	printf("second_out_time_num:%d\n",second_out_time_num);
+	fprintf(fpWrite,"second_out_time_num:%d\n",second_out_time_num);
 	printf("no_chain_num:%d\n",no_chain_num);
 	fprintf(fpWrite,"no_chain_num:%d\n",no_chain_num);
 	printf("more_chain_num:%d\n",more_chain_num);
