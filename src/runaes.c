@@ -1258,7 +1258,7 @@ int main(){
 			{delta,delta,delta2,delta3},{delta3,delta,delta,delta2}};
 		int re_rk = recovery_10round_key(delta,differential_cipher_4_error,arr_delta,relationship_delta_difference_cipher,dc,
 			guess_key_10round,key_10round,w,diff_delta_count,&first_success_num,&first_fail_num,cipher_verify,in,n,nt,base,key,
-			&first_out_time_num,other_fail_num);
+			&first_out_time_num,&other_fail_num);
 		if(re_rk == -1){
 			byte delta = 0;
 			byte differential_cipher_4_error[4][4]={0};
@@ -1281,7 +1281,7 @@ int main(){
 				{delta,delta,delta2,delta3},{delta3,delta,delta,delta2}};
 			recovery_10round_key(delta,differential_cipher_4_error,arr_delta,relationship_delta_difference_cipher,dc,
 				guess_key_10round,key_10round,w,diff_delta_count,&second_success_num,&second_fail_num,cipher_verify,in,n,nt,base,key,
-				&second_out_time_num,other_fail_num);
+				&second_out_time_num,&other_fail_num);
 		}
 		//recovery_main_key(key_10round,main_key);
 		fpWrite = fopen("experiment.txt", "a+");
