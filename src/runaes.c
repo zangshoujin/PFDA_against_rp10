@@ -661,7 +661,8 @@ int encrypt_find_different(byte in[16],byte out[16],byte key[16],byte outex[16],
 }
 
 int verify_online_key(byte guess_key_10round[16][16],byte key_10round[16],byte w[176],int candidiate_key_count[16],
-	int* success_num,int* first_fail_num,byte cipher_verify[16],byte in[16],int n,int nt,int base,byte reall_main_key[16],int *first_out_time_num){
+	int* success_num,int* first_fail_num,byte cipher_verify[16],byte in[16],int n,int nt,int base,byte reall_main_key[16],
+	int *first_out_time_num,int *other_fail_num){
 	int verify_encrypt_num = 0;
 	for(int a0=0;a0<candidiate_key_count[0];a0++){
 		printf("\na0:%d\t",a0);
@@ -810,6 +811,7 @@ int verify_online_key(byte guess_key_10round[16][16],byte key_10round[16],byte w
 																			return 0;
 																		}
 																		else{
+																			(*other_fail_num)++;
 																			FILE *fpWrite = fopen("experiment.txt", "a+");
 																			printf("偶然失败！！！\n");
 																			fprintf(fpWrite,"偶然失败！！！\n");
@@ -841,7 +843,8 @@ int verify_online_key(byte guess_key_10round[16][16],byte key_10round[16],byte w
 }
 
 int verify_offline_key(byte guess_key_10round[16][16],byte key_10round[16],byte w[176],int candidiate_key_count[16],
-	int* success_num,int* first_fail_num,byte cipher_verify[16],byte in[16],int n,int nt,int base,byte reall_main_key[16],int *first_out_time_num){
+	int* success_num,int* first_fail_num,byte cipher_verify[16],byte in[16],int n,int nt,int base,byte reall_main_key[16],
+	int *first_out_time_num,int *other_fail_num){
 	int verify_encrypt_num = 0;	
 	for(int a0=0;a0<candidiate_key_count[0];a0++){
 		printf("\na0:%d\t",a0);
@@ -995,9 +998,10 @@ int verify_offline_key(byte guess_key_10round[16][16],byte key_10round[16],byte 
 																				}
 																			}
 																			fclose(fpWrite);
-																			return 0;
+																			return 1;
 																		}
 																		else{
+																			(*other_fail_num)++;
 																			FILE *fpWrite = fopen("experiment.txt", "a+");
 																			printf("偶然失败！！！\n");
 																			fprintf(fpWrite,"偶然失败！！！\n");
@@ -1032,7 +1036,7 @@ int verify_offline_key(byte guess_key_10round[16][16],byte key_10round[16],byte 
 int recovery_10round_key(byte delta,byte differential_cipher_4_error[4][4],byte arr_delta[4][4],
 	int relationship_delta_difference_cipher[4][4],struct Different_Cipher dc[4],byte guess_key_10round[16][16],
 	byte key_10round[16],byte w[176],int diff_delta_count[4],int* success_num,int* first_fail_num,byte cipher_verify[16]
-	,byte in[16],int n,int nt,int base,byte reall_main_key[16],int *first_out_time_num){
+	,byte in[16],int n,int nt,int base,byte reall_main_key[16],int *first_out_time_num,int *other_fail_num){
 	int candidiate_key_count[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 	for(int i=0;i<4;i++){//遍历四对密文that有四个字节不同的
 		for(int j=0;j<4;j++){//遍历每对（有四个字节不同的）密文的每一对不同字节
@@ -1079,9 +1083,14 @@ int recovery_10round_key(byte delta,byte differential_cipher_4_error[4][4],byte 
 			}
 		}
 	}
-	int re_vok = verify_offline_key(guess_key_10round,key_10round,w,candidiate_key_count,success_num,first_fail_num,cipher_verify,in,n,nt,base,reall_main_key,first_out_time_num);
-	if(re_vok == -1)
+	int re_vok = verify_offline_key(guess_key_10round,key_10round,w,candidiate_key_count,success_num,first_fail_num,cipher_verify,
+	in,n,nt,base,reall_main_key,first_out_time_num,other_fail_num);
+	if(re_vok == -1){
 		return -1;
+	}
+	else if(re_vok == -2){
+		return -2;
+	}
 	else if(re_vok == -3){
 		return -3;
 	}	
@@ -1152,6 +1161,7 @@ int main(){
 	int fail_num = 0;
 	int first_fail_num = 0;//第一次失败的次数
 	int second_fail_num = 0;//第二次失败的次数,也就是总的失败次数
+	int other_fail_num = 0;//未知的失败情况
 	int appear_4_but_not_match = 0;//
 	int no_chain_num = 0;//找不到链的情况（继续找的情况）
 	int more_chain_num = 0;//匹配多条链的情况
@@ -1247,7 +1257,8 @@ int main(){
 		byte arr_delta[4][4] = {{delta2,delta3,delta,delta},{delta,delta2,delta3,delta},
 			{delta,delta,delta2,delta3},{delta3,delta,delta,delta2}};
 		int re_rk = recovery_10round_key(delta,differential_cipher_4_error,arr_delta,relationship_delta_difference_cipher,dc,
-			guess_key_10round,key_10round,w,diff_delta_count,&first_success_num,&first_fail_num,cipher_verify,in,n,nt,base,key,&first_out_time_num);
+			guess_key_10round,key_10round,w,diff_delta_count,&first_success_num,&first_fail_num,cipher_verify,in,n,nt,base,key,
+			&first_out_time_num,other_fail_num);
 		if(re_rk == -1){
 			byte delta = 0;
 			byte differential_cipher_4_error[4][4]={0};
@@ -1269,7 +1280,8 @@ int main(){
 			byte arr_delta[4][4] = {{delta2,delta3,delta,delta},{delta,delta2,delta3,delta},
 				{delta,delta,delta2,delta3},{delta3,delta,delta,delta2}};
 			recovery_10round_key(delta,differential_cipher_4_error,arr_delta,relationship_delta_difference_cipher,dc,
-				guess_key_10round,key_10round,w,diff_delta_count,&second_success_num,&second_fail_num,cipher_verify,in,n,nt,base,key,&second_out_time_num);
+				guess_key_10round,key_10round,w,diff_delta_count,&second_success_num,&second_fail_num,cipher_verify,in,n,nt,base,key,
+				&second_out_time_num,other_fail_num);
 		}
 		//recovery_main_key(key_10round,main_key);
 		fpWrite = fopen("experiment.txt", "a+");
@@ -1294,6 +1306,8 @@ int main(){
 		fprintf(fpWrite,"first_out_time_num:%d\n",first_out_time_num);
 		printf("second_out_time_num:%d\n",second_out_time_num);
 		fprintf(fpWrite,"second_out_time_num:%d\n",second_out_time_num);
+		printf("other_fail_num:%d\n",other_fail_num);
+		fprintf(fpWrite,"other_fail_num:%d\n",other_fail_num);
 		printf("no_chain_num:%d\n",no_chain_num);
 		fprintf(fpWrite,"no_chain_num:%d\n",no_chain_num);
 		printf("more_chain_num:%d\n",more_chain_num);
@@ -1336,6 +1350,8 @@ int main(){
 	fprintf(fpWrite,"first_out_time_num:%d\n",first_out_time_num);
 	printf("second_out_time_num:%d\n",second_out_time_num);
 	fprintf(fpWrite,"second_out_time_num:%d\n",second_out_time_num);
+	printf("other_fail_num:%d\n",other_fail_num);
+	fprintf(fpWrite,"other_fail_num:%d\n",other_fail_num);
 	printf("no_chain_num:%d\n",no_chain_num);
 	fprintf(fpWrite,"no_chain_num:%d\n",no_chain_num);
 	printf("more_chain_num:%d\n",more_chain_num);
