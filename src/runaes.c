@@ -1285,15 +1285,14 @@ int main(){
 			struct Different_Cipher dc[4];
 			int relationship_delta_difference_cipher[4][4] = {{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1}};//记录一组差分值对应第几组delta
 			int diff_delta_count[4]={0,0,0,0};//记录一组差分值能够匹配几组delta
-			byte plain_verify[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//验证的时候使用
 			byte cipher_verify[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//验证的时候使用
 			all_encrypt_num[e] += encrypt_find_different(in,out,key,outex,n,nt,base,&delta,differential_cipher_4_error,dc,
 				relationship_delta_difference_cipher,diff_delta_count,&appear_4_but_not_match,&no_chain_num,&more_chain_num,
-				&match_four_num,cipher_verify,plain_verify);	
+				&match_four_num,cipher_verify);	
 			byte guess_key_10round[16][16]={{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-											{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-											{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-											{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
+										{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+										{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+										{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
 			byte key_10round[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//存放求得的第十轮子密钥
 			byte main_key[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//存放求得的初始密钥
 			byte delta2 = mult(2 , delta);
@@ -1301,8 +1300,8 @@ int main(){
 			byte arr_delta[4][4] = {{delta2,delta3,delta,delta},{delta,delta2,delta3,delta},
 				{delta,delta,delta2,delta3},{delta3,delta,delta,delta2}};
 			recovery_10round_key(delta,differential_cipher_4_error,arr_delta,relationship_delta_difference_cipher,dc,
-				guess_key_10round,key_10round,w,diff_delta_count,&second_success_num_in_out_time,&second_fail_num_in_out_time,cipher_verify,plain_verify,n,nt,base,key,
-				&second_out_time_num_in_out_time,&other_fail_num);
+				guess_key_10round,key_10round,w,diff_delta_count,&second_success_num_in_fail,&second_fail_num_in_fail,cipher_verify,in,n,nt,base,key,
+				&second_out_time_num_in_fail,&other_fail_num);
 		}
 
 		//recovery_main_key(key_10round,main_key);
@@ -1389,7 +1388,7 @@ int main(){
 	fprintf(fpWrite,"second_out_time_num_in_fail:%d\n",second_out_time_num_in_fail);
 	printf("second_out_time_num_in_out_time:%d\n",second_out_time_num_in_out_time);
 	fprintf(fpWrite,"second_out_time_num_in_out_time:%d\n",second_out_time_num_in_out_time);
-	
+
 	printf("other_fail_num:%d\n",other_fail_num);
 	fprintf(fpWrite,"other_fail_num:%d\n",other_fail_num);
 	printf("no_chain_num:%d\n",no_chain_num);
