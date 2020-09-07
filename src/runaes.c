@@ -14,7 +14,7 @@
 #include "cvector.h"
 #include "time.h"
 
-#define Experment_num 5
+#define Experment_num 100
 #define Share_num 2
 #define Is_random 1  //控制是否随机明文、密钥和错误,调试用 1:表示随机 0:表示固定
 #define Is_print 1 //控制是否打印详细数据，1:表示打印，0:表示不打印
