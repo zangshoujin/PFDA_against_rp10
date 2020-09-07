@@ -1318,16 +1318,25 @@ int main(){
 		fpWrite = fopen("experiment.txt", "a+");
 		printf("first_success_num:%d\n",first_success_num);
 		fprintf(fpWrite,"first_success_num:%d\n",first_success_num);
-		printf("second_success_num:%d\n",second_success_num);
-		fprintf(fpWrite,"second_success_num:%d\n",second_success_num);
+		printf("second_success_num_in_fail:%d\n",second_success_num_in_fail);
+		fprintf(fpWrite,"second_success_num_in_fail:%d\n",second_success_num_in_fail);
+		printf("second_success_num_in_out_time:%d\n",second_success_num_in_out_time);
+		fprintf(fpWrite,"second_success_num_in_out_time:%d\n",second_success_num_in_out_time);
+
 		printf("first_fail_num:%d\n",first_fail_num);
 		fprintf(fpWrite,"first_fail_num:%d\n",first_fail_num);
-		printf("second_fail_num:%d\n",second_fail_num);
-		fprintf(fpWrite,"second_fail_num:%d\n",second_fail_num);
+		printf("second_fail_num_in_fail:%d\n",second_fail_num_in_fail);
+		fprintf(fpWrite,"second_fail_num_in_fail:%d\n",second_fail_num_in_fail);
+		printf("second_fail_num_in_out_time:%d\n",second_fail_num_in_out_time);
+		fprintf(fpWrite,"second_fail_num_in_out_time:%d\n",second_fail_num_in_out_time);
+
 		printf("first_out_time_num:%d\n",first_out_time_num);
 		fprintf(fpWrite,"first_out_time_num:%d\n",first_out_time_num);
-		printf("second_out_time_num:%d\n",second_out_time_num);
-		fprintf(fpWrite,"second_out_time_num:%d\n",second_out_time_num);
+		printf("second_out_time_num_in_fail:%d\n",second_out_time_num_in_fail);
+		fprintf(fpWrite,"second_out_time_num_in_fail:%d\n",second_out_time_num_in_fail);
+		printf("second_out_time_num_in_out_time:%d\n",second_out_time_num_in_out_time);
+		fprintf(fpWrite,"second_out_time_num_in_out_time:%d\n",second_out_time_num_in_out_time);
+
 		printf("other_fail_num:%d\n",other_fail_num);
 		fprintf(fpWrite,"other_fail_num:%d\n",other_fail_num);
 		printf("no_chain_num:%d\n",no_chain_num);
@@ -1362,16 +1371,25 @@ int main(){
 	fprintf(fpWrite,"平均需要加密%d次才能找到16个字节。\n最多需要%d次，最少需要%d次。\n",sum/Experment_num,max,min);
 	printf("first_success_num:%d\n",first_success_num);
 	fprintf(fpWrite,"first_success_num:%d\n",first_success_num);
-	printf("second_success_num:%d\n",second_success_num);
-	fprintf(fpWrite,"second_success_num:%d\n",second_success_num);
+	printf("second_success_num_in_fail:%d\n",second_success_num_in_fail);
+	fprintf(fpWrite,"second_success_num_in_fail:%d\n",second_success_num_in_fail);
+	printf("second_success_num_in_out_time:%d\n",second_success_num_in_out_time);
+	fprintf(fpWrite,"second_success_num_in_out_time:%d\n",second_success_num_in_out_time);
+
 	printf("first_fail_num:%d\n",first_fail_num);
 	fprintf(fpWrite,"first_fail_num:%d\n",first_fail_num);
-	printf("second_fail_num:%d\n",second_fail_num);
-	fprintf(fpWrite,"second_fail_num:%d\n",second_fail_num);
+	printf("second_fail_num_in_fail:%d\n",second_fail_num_in_fail);
+	fprintf(fpWrite,"second_fail_num_in_fail:%d\n",second_fail_num_in_fail);
+	printf("second_fail_num_in_out_time:%d\n",second_fail_num_in_out_time);
+	fprintf(fpWrite,"second_fail_num_in_out_time:%d\n",second_fail_num_in_out_time);
+
 	printf("first_out_time_num:%d\n",first_out_time_num);
 	fprintf(fpWrite,"first_out_time_num:%d\n",first_out_time_num);
-	printf("second_out_time_num:%d\n",second_out_time_num);
-	fprintf(fpWrite,"second_out_time_num:%d\n",second_out_time_num);
+	printf("second_out_time_num_in_fail:%d\n",second_out_time_num_in_fail);
+	fprintf(fpWrite,"second_out_time_num_in_fail:%d\n",second_out_time_num_in_fail);
+	printf("second_out_time_num_in_out_time:%d\n",second_out_time_num_in_out_time);
+	fprintf(fpWrite,"second_out_time_num_in_out_time:%d\n",second_out_time_num_in_out_time);
+	
 	printf("other_fail_num:%d\n",other_fail_num);
 	fprintf(fpWrite,"other_fail_num:%d\n",other_fail_num);
 	printf("no_chain_num:%d\n",no_chain_num);
