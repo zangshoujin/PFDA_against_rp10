@@ -396,6 +396,7 @@ int Is_equal(byte a[16],byte b[16]){
 int encrypt_find_different(byte in[16],byte out[16],byte key[16],byte outex[16],int n,int nt,int base,byte* delta,
 	byte differential_cipher_4_error[4][4],struct Different_Cipher dc[4],int relationship_delta_difference_cipher[4][4],
 	int diff_delta_count[4],int* appear_4_but_not_match,int* no_chain,int* more_chain,int* match_four,byte cipher_verify[16]){//第九轮出错导致密文四个字节不同的差分数组
+	
 	int error_local[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//记录错误的位置用
 	byte stored_cipher[Cipher_num][16];
 	int differential_cipher_4_error_count = 0;//是否已经找到了四对四个字节不同的密文对，取值范围0-3，大于4就break
@@ -434,7 +435,7 @@ int encrypt_find_different(byte in[16],byte out[16],byte key[16],byte outex[16],
 			if((different_count == 0) && (cipher_verify_flag == 0)){//记录cipher_verify，用于验证
 				if(Is_equal(cipher_verify,out)){
 					cipher_verify_num++;
-					if(cipher_verify_num == 5){//如果已经有三条密文相同了,33333
+					if(cipher_verify_num == 5){//如果已经有三条密文相同了,33333；5-2=3
 						cipher_verify_flag = 1;
 						fpWrite = fopen("experiment.txt", "a+");
 						printf("cipher_verify:\ni:%d,current_cipher_number：%d\n",i,current_cipher_number);
@@ -465,11 +466,12 @@ int encrypt_find_different(byte in[16],byte out[16],byte key[16],byte outex[16],
 			}
 			else if(different_count == 4 && (!error_local[different_local[0]] || !error_local[different_local[1]] || 
 				!error_local[different_local[2]] || !error_local[different_local[3]])){//第九轮出错，导致密文四个字节不同
+
 				if(!((different_local[0]==0&&different_local[1]==7&&different_local[2]==10&&different_local[3]==13)||
 					(different_local[0]==1&&different_local[1]==4&&different_local[2]==11&&different_local[3]==14)||
 					(different_local[0]==2&&different_local[1]==5&&different_local[2]==8&&different_local[3]==15)||
 					(different_local[0]==3&&different_local[1]==6&&different_local[2]==9&&different_local[3]==12)))
-					break;//把那些错误位置不是0，7，10，13；1，4，11，14；2，5，8，15；3，6，9，12的排除
+					continue;//把那些错误位置不是0，7，10，13；1，4，11，14；2，5，8，15；3，6，9，12的排除
 				
 				FILE *fpWrite = fopen("experiment.txt", "a+");
 				printf("第%d条密文与第%d条密文有%d字节不同!\n",i,current_cipher_number,different_count);
@@ -559,80 +561,71 @@ int encrypt_find_different(byte in[16],byte out[16],byte key[16],byte outex[16],
 	int no_chain_flag = 0;
 	while(return_num <4){
 		no_chain_flag = 1;
-		for(int rddc=0;rddc<4;rddc++){
-			if(relationship_delta_difference_cipher[rddc][0]== -1){
-				fpWrite = fopen("experiment.txt", "a+");
-				printf("继续找：\n");
-				fprintf(fpWrite,"继续找：\n");
-				fclose(fpWrite);	
-				for(int h=0;h<4;h++){
-					diff_delta_count[h] = 0;
+		for(int rddc=0;rddc<4 && relationship_delta_difference_cipher[rddc][0]== -1;rddc++){
+			fpWrite = fopen("experiment.txt", "a+");
+			printf("继续找：\n");
+			fprintf(fpWrite,"继续找：\n");
+			fclose(fpWrite);	
+			for(int h=0;h<4;h++){
+				diff_delta_count[h] = 0;
+			}
+			bool flag = false;
+			for(;current_cipher_number<Cipher_num&&!flag;current_cipher_number++){
+				//fpWrite = fopen("encrypt_state.txt", "a+");
+				//fprintf(fpWrite,"第%d次加密状态矩阵:--share----------\n",current_cipher_number);
+				//fclose(fpWrite);
+				run_aes_share(in,out,key,outex,n,&subbyte_rp_share,nt,base); 
+				for(int i=0;i<16;i++){
+					stored_cipher[current_cipher_number][i] = out[i];
 				}
-				bool flag = false;
-				for(;current_cipher_number<Cipher_num&&!flag;current_cipher_number++){
-					//fpWrite = fopen("encrypt_state.txt", "a+");
-					//fprintf(fpWrite,"第%d次加密状态矩阵:--share----------\n",current_cipher_number);
-					//fclose(fpWrite);
-					run_aes_share(in,out,key,outex,n,&subbyte_rp_share,nt,base); 
-					for(int i=0;i<16;i++){
-						stored_cipher[current_cipher_number][i] = out[i];
-					}
-					for(int i=0;i<current_cipher_number;i++){
-						int different_local[4] = {0,0,0,0};
-						int different_count = 0;
-						for(int k=0;k<16;k++){
-							if((stored_cipher[i][k]) != (stored_cipher[current_cipher_number][k])){
-								if(different_count>=4){//记住这个地方的bug！！第三次bug了
-									different_count++;
-									continue;
-								}
-								different_local[different_count] = k;
+				for(int i=0;i<current_cipher_number;i++){
+					int different_local[4] = {0,0,0,0};
+					int different_count = 0;
+					for(int k=0;k<16;k++){
+						if((stored_cipher[i][k]) != (stored_cipher[current_cipher_number][k])){
+							if(different_count>=4){//记住这个地方的bug！！第三次bug了
 								different_count++;
+								continue;
 							}
+							different_local[different_count] = k;
+							different_count++;
 						}
-						if(different_count == 4 && dc[rddc].diff_local[0]==different_local[0] && dc[rddc].diff_local[1]==different_local[1] &&
-							dc[rddc].diff_local[2]==different_local[2] && dc[rddc].diff_local[3]==different_local[3]){
-							fpWrite = fopen("experiment.txt", "a+");
-							printf("第%d条密文与第%d条密文有%d字节不同!\n",i,current_cipher_number,different_count);
-							fprintf(fpWrite,"第%d条密文与第%d条密文有%d字节不同!\n",i,current_cipher_number,different_count);
-							printf("第%d条:\n",i);
-							fprintf(fpWrite,"第%d条:\n",i);
-							fclose(fpWrite);
-							print_4_by_4(stored_cipher[i]);
-							fpWrite = fopen("experiment.txt", "a+");
-							printf("第%d条:\n",current_cipher_number);
-							fprintf(fpWrite,"第%d条:\n",current_cipher_number);
-							fclose(fpWrite);
-							print_4_by_4(stored_cipher[current_cipher_number]);
-								
-							for(int q=0;q<4;q++){
-								error_local[different_local[q]] = 1;//将本次四个错误字节位置存起来
-								dc[rddc].diff_local[q] = different_local[q];//将两条只有四个字节不同的密文的不同位置存储起来
-								differential_cipher_4_error[rddc][q] = stored_cipher[i][different_local[q]] ^
-									stored_cipher[current_cipher_number][different_local[q]];//计算四个字节的差分
-								//printf("差分：%02x\n",differential_cipher_4_error[differential_cipher_4_error_count][n]);
-							}
-							for(int y=0;y<16;y++){//将两条只有四个字节不同的密文存储起来
-								dc[rddc].diff_cipher[0][y] = stored_cipher[i][y];
-								dc[rddc].diff_cipher[1][y] = stored_cipher[current_cipher_number][y];
-							}
-							flag = 1;
-							// fpWrite = fopen("experiment.txt", "a+");
-							// printf("last四个字节的差分：\n");
-							// fprintf(fpWrite,"last四个字节的差分：\n");
-							// for(int i=0;i<4;i++){
-							// 	for(int j=0;j<4;j++){
-							// 		printf("%02x ",differential_cipher_4_error[i][j]);
-							// 		fprintf(fpWrite,"%02x ",differential_cipher_4_error[i][j]);
-							// 	}
-							// 	printf("\n");
-							// 	fprintf(fpWrite,"\n");
-							// }
-							// printf("\n");
-							// fprintf(fpWrite,"\n");
-							// fclose(fpWrite);
-							break;
+					}
+					if(different_count == 4 && dc[rddc].diff_local[0]==different_local[0] && dc[rddc].diff_local[1]==different_local[1] &&
+						dc[rddc].diff_local[2]==different_local[2] && dc[rddc].diff_local[3]==different_local[3]){
+
+						if(!((different_local[0]==0&&different_local[1]==7&&different_local[2]==10&&different_local[3]==13)||
+							(different_local[0]==1&&different_local[1]==4&&different_local[2]==11&&different_local[3]==14)||
+							(different_local[0]==2&&different_local[1]==5&&different_local[2]==8&&different_local[3]==15)||
+							(different_local[0]==3&&different_local[1]==6&&different_local[2]==9&&different_local[3]==12)))
+							continue;//把那些错误位置不是0，7，10，13；1，4，11，14；2，5，8，15；3，6，9，12的排除
+			
+						fpWrite = fopen("experiment.txt", "a+");
+						printf("第%d条密文与第%d条密文有%d字节不同!\n",i,current_cipher_number,different_count);
+						fprintf(fpWrite,"第%d条密文与第%d条密文有%d字节不同!\n",i,current_cipher_number,different_count);
+						printf("第%d条:\n",i);
+						fprintf(fpWrite,"第%d条:\n",i);
+						fclose(fpWrite);
+						print_4_by_4(stored_cipher[i]);
+						fpWrite = fopen("experiment.txt", "a+");
+						printf("第%d条:\n",current_cipher_number);
+						fprintf(fpWrite,"第%d条:\n",current_cipher_number);
+						fclose(fpWrite);
+						print_4_by_4(stored_cipher[current_cipher_number]);
+							
+						for(int q=0;q<4;q++){
+							error_local[different_local[q]] = 1;//将本次四个错误字节位置存起来
+							dc[rddc].diff_local[q] = different_local[q];//将两条只有四个字节不同的密文的不同位置存储起来
+							differential_cipher_4_error[rddc][q] = stored_cipher[i][different_local[q]] ^
+								stored_cipher[current_cipher_number][different_local[q]];//计算四个字节的差分
+							//printf("差分：%02x\n",differential_cipher_4_error[differential_cipher_4_error_count][n]);
 						}
+						for(int y=0;y<16;y++){//将两条只有四个字节不同的密文存储起来
+							dc[rddc].diff_cipher[0][y] = stored_cipher[i][y];
+							dc[rddc].diff_cipher[1][y] = stored_cipher[current_cipher_number][y];
+						}
+						flag = true;
+						break;
 					}
 				}
 			}
