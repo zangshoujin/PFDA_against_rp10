@@ -1150,18 +1150,21 @@ int main(){
 	int all_encrypt_num[Experment_num];
 	double excute_time[Experment_num];//每次实验的执行时间，先不统计，因为现在还涉及读写文件，会消耗大量时间
 	int first_success_num = 0;//成功的次数
-	int second_success_num = 0;//第二次才成功的次数
-	int fail_num = 0;
-	int first_fail_num = 0;//第一次失败的次数
-	int second_fail_num = 0;//第二次失败的次数,也就是总的失败次数
-	int other_fail_num = 0;//未知的失败情况
+	int second_success_num_in_fail = 0;
+	int second_success_num_in_out_time = 0;
+	int first_fail_num = 0;//失败的次数
+	int second_fail_num_in_fail = 0;
+	int second_fail_num_in_out_time = 0;
+	int other_fail_num = 0;//其他未知的失败次数
 	int appear_4_but_not_match = 0;//
 	int no_chain_num = 0;//找不到链的情况（继续找的情况）
 	int more_chain_num = 0;//匹配多条链的情况
 	int match_four_num = 0;//刚好匹配四条链的情况
 	int invalid_error_num = 0;//注入无效错误的情况
 	int first_out_time_num = 0;//超时的次数
-	int second_out_time_num = 0;//超时的次数
+	int second_out_time_num_in_fail = 0;
+	int second_out_time_num_in_out_time = 0;
+
 	for(int e=0;e<Experment_num;e++){
 		middle1 = clock();
 		FILE *fpWrite ;
@@ -1273,9 +1276,35 @@ int main(){
 			byte arr_delta[4][4] = {{delta2,delta3,delta,delta},{delta,delta2,delta3,delta},
 				{delta,delta,delta2,delta3},{delta3,delta,delta,delta2}};
 			recovery_10round_key(delta,differential_cipher_4_error,arr_delta,relationship_delta_difference_cipher,dc,
-				guess_key_10round,key_10round,w,diff_delta_count,&second_success_num,&second_fail_num,cipher_verify,in,n,nt,base,key,
-				&second_out_time_num,&other_fail_num);
+				guess_key_10round,key_10round,w,diff_delta_count,&second_success_num_in_fail,&second_fail_num_in_fail,cipher_verify,in,n,nt,base,key,
+				&second_out_time_num_in_fail,&other_fail_num);
 		}
+		else if(re_rk == -3){
+			byte delta = 0;
+			byte differential_cipher_4_error[4][4]={0};
+			struct Different_Cipher dc[4];
+			int relationship_delta_difference_cipher[4][4] = {{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1}};//记录一组差分值对应第几组delta
+			int diff_delta_count[4]={0,0,0,0};//记录一组差分值能够匹配几组delta
+			byte plain_verify[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//验证的时候使用
+			byte cipher_verify[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//验证的时候使用
+			all_encrypt_num[e] += encrypt_find_different(in,out,key,outex,n,nt,base,&delta,differential_cipher_4_error,dc,
+				relationship_delta_difference_cipher,diff_delta_count,&appear_4_but_not_match,&no_chain_num,&more_chain_num,
+				&match_four_num,cipher_verify,plain_verify);	
+			byte guess_key_10round[16][16]={{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+											{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+											{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+											{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
+			byte key_10round[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//存放求得的第十轮子密钥
+			byte main_key[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//存放求得的初始密钥
+			byte delta2 = mult(2 , delta);
+			byte delta3 = mult(3 , delta);
+			byte arr_delta[4][4] = {{delta2,delta3,delta,delta},{delta,delta2,delta3,delta},
+				{delta,delta,delta2,delta3},{delta3,delta,delta,delta2}};
+			recovery_10round_key(delta,differential_cipher_4_error,arr_delta,relationship_delta_difference_cipher,dc,
+				guess_key_10round,key_10round,w,diff_delta_count,&second_success_num_in_out_time,&second_fail_num_in_out_time,cipher_verify,plain_verify,n,nt,base,key,
+				&second_out_time_num_in_out_time,&other_fail_num);
+		}
+
 		//recovery_main_key(key_10round,main_key);
 		fpWrite = fopen("experiment.txt", "a+");
 		printf("second_encrypt_num:%d\n",all_encrypt_num[e]);
