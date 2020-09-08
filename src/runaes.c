@@ -15,7 +15,7 @@
 #include "time.h"
 
 #define Experment_num 100
-#define Share_num 2
+#define Share_num 4
 #define Is_random 1  //控制是否随机明文、密钥和错误,调试用 1:表示随机 0:表示固定
 #define Is_print 1 //控制是否打印详细数据，1:表示打印，0:表示不打印
 typedef int bool;
@@ -235,6 +235,11 @@ int first_filter_difference_chain(byte delta,byte differential_cipher_4_error[4]
 
 int later_filter_difference_chain(byte delta,byte differential_cipher_4_error[4][4],byte arr_delta[4][4],
 	int relationship_delta_difference_cipher[4][4],int diff_delta_count[4]){
+
+	FILE *fpWrite = fopen("experiment.txt", "a+");
+	fprintf(fpWrite,"第二次过滤算法");
+	fclose(fpWrite);
+	printf("第二次过滤算法");	
 	int num = 0;
 	int temp[4] = {0,0,0,0};
 	for(int i=0;i<4;i++){//遍历differential_cipher_4_error的第一维
@@ -561,7 +566,7 @@ int encrypt_find_different(byte in[16],byte out[16],byte key[16],byte outex[16],
 	int no_chain_flag = 0;
 	while(return_num <4){
 		no_chain_flag = 1;
-		for(int rddc=0;rddc<4 && relationship_delta_difference_cipher[rddc][0]== -1;rddc++){
+		for(int rddc=0;rddc<4 && relationship_delta_difference_cipher[rddc][0] == -1;rddc++){
 			fpWrite = fopen("experiment.txt", "a+");
 			printf("继续找：\n");
 			fprintf(fpWrite,"继续找：\n");
@@ -591,8 +596,8 @@ int encrypt_find_different(byte in[16],byte out[16],byte key[16],byte outex[16],
 							different_count++;
 						}
 					}
-					if(different_count == 4 && dc[rddc].diff_local[0]==different_local[0] && dc[rddc].diff_local[1]==different_local[1] &&
-						dc[rddc].diff_local[2]==different_local[2] && dc[rddc].diff_local[3]==different_local[3]){
+					if(different_count == 4 && dc[rddc].diff_local[0] == different_local[0] && dc[rddc].diff_local[1] == different_local[1] &&
+						dc[rddc].diff_local[2] == different_local[2] && dc[rddc].diff_local[3] == different_local[3]){
 
 						if(!((different_local[0]==0&&different_local[1]==7&&different_local[2]==10&&different_local[3]==13)||
 							(different_local[0]==1&&different_local[1]==4&&different_local[2]==11&&different_local[3]==14)||
