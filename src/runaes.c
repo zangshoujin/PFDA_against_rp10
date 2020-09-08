@@ -254,7 +254,7 @@ int later_filter_difference_chain(byte delta,byte differential_cipher_4_error[4]
 			//printf("\n");
 			if(match_num == 4){
 				relationship_delta_difference_cipher[i][diff_delta_count[i]] = j;
-				FILE *fpWrite = fopen("experiment.txt", "a+");
+				fpWrite = fopen("experiment.txt", "a+");
 				fprintf(fpWrite,"diff:%d\tdelta:%d\n",i,j);
 				fclose(fpWrite);
 				printf("diff:%d\tdelta:%d\n",i,j);
@@ -267,7 +267,7 @@ int later_filter_difference_chain(byte delta,byte differential_cipher_4_error[4]
 			}
 		}
 	}
-	FILE *fpWrite = fopen("experiment.txt", "a+");
+	fpWrite = fopen("experiment.txt", "a+");
 	for(int i=0;i<4;i++){
 		printf("i:%d\n",i);
 		fprintf(fpWrite,"i:%d\n",i);
