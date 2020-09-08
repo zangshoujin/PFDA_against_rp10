@@ -14,8 +14,8 @@
 #include "cvector.h"
 #include "time.h"
 
-#define Experment_num 100
-#define Share_num 4
+#define Experment_num 10
+#define Share_num 2
 #define Is_random 1  //控制是否随机明文、密钥和错误,调试用 1:表示随机 0:表示固定
 #define Is_print 1 //控制是否打印详细数据，1:表示打印，0:表示不打印
 typedef int bool;
@@ -1307,8 +1307,8 @@ int main(){
 			byte arr_delta[4][4] = {{delta2,delta3,delta,delta},{delta,delta2,delta3,delta},
 				{delta,delta,delta2,delta3},{delta3,delta,delta,delta2}};
 			recovery_10round_key(delta,differential_cipher_4_error,arr_delta,relationship_delta_difference_cipher,dc,
-				guess_key_10round,key_10round,w,diff_delta_count,&second_success_num_in_fail,&second_fail_num_in_fail,cipher_verify,in,n,nt,base,key,
-				&second_out_time_num_in_fail,&other_fail_num);
+				guess_key_10round,key_10round,w,diff_delta_count,&second_success_num_in_out_time,&second_fail_num_in_out_time,cipher_verify,in,n,nt,base,key,
+				&second_out_time_num_in_out_time,&other_fail_num);
 		}
 
 		//recovery_main_key(key_10round,main_key);
