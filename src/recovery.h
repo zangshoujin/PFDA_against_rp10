@@ -1,6 +1,10 @@
 #ifndef __recovery_h__
 #define __recovery_h__
 #include "verify.h"
+#include "recovery.h"
+#include <stdio.h>
+#include "difftribute_table.h"
+#include "aes.h"
 typedef unsigned char byte;
 
 struct Different_Cipher{

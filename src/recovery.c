@@ -1,6 +1,5 @@
 #include "recovery.h"
-#include <stdio.h>
-#include "difftribute_table.h"
+
 
 
 int recovery_main_key(byte key_10round[16],byte main_key[16]){

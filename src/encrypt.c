@@ -1,6 +1,5 @@
 #include "encrypt.h"
-#include "aes_rp.h"
-#include <stdio.h>
+
 
 int encrypt_find_different(byte in[16],byte out[16],byte key[16],byte outex[16],int n,int nt,int base,byte* delta,
 	byte differential_cipher_4_error[4][4],struct Different_Cipher dc[4],int relationship_delta_difference_cipher[4][4],
