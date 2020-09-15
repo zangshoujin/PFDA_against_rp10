@@ -1,6 +1,7 @@
 #ifndef __filter_h__
 #define __filter_h__
-
+#include "difftribute_table.h"
+#include <stdio.h>
 typedef int bool;
 #define true 1
 #define false 0
