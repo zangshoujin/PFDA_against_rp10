@@ -268,7 +268,7 @@ int main(){
 			if(all_encrypt_num[i]<min)
 				min = all_encrypt_num[i];
 		}
-		FILE *fpWrite = fopen("experiment.txt", "a+");
+		fpWrite = fopen("experiment.txt", "a+");
 		printf("\n总实验次数:%d\n",Experment_num);
 		fprintf(fpWrite,"\n总实验次数:%d\n",Experment_num);
 		printf("share个数:%d\n",n);
