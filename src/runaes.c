@@ -21,7 +21,7 @@
 typedef int bool;
 #define true 1
 #define false 0
-#define Cipher_num 10000
+#define Cipher_num 1000
 
 int recovery_main_key(byte key_10round[16],byte main_key[16]);
 
