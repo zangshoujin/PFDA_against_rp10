@@ -1323,8 +1323,8 @@ int main(){
 		excute_time[e] = (double)(middle2 - middle1)/ CLOCKS_PER_SEC;
 		fpWrite = fopen("experiment.txt", "a+");
 
-		printf("本次实验执行时间:%d\n",excute_time[e]);
-		fprintf(fpWrite,"本次实验执行时间:%d\n",excute_time[e]);
+		printf("本次实验执行时间:%f\n",excute_time[e]);
+		fprintf(fpWrite,"本次实验执行时间:%f\n",excute_time[e]);
 
 		printf("first_success_num:%d\n",first_success_num);
 		fprintf(fpWrite,"first_success_num:%d\n",first_success_num);
