@@ -12,7 +12,7 @@ typedef unsigned char byte;
 typedef int bool;
 #define true 1
 #define false 0
-#define Cipher_num 1000
+#define Cipher_num 10000
 
 #define Experment_num 10
 #define Share_num 2
