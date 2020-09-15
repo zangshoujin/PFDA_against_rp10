@@ -2,6 +2,8 @@
 #include "filter.h"
 #include "difftribute_table.h"
 #include "aes_rp.h"
+#include "recovery.h"
+#include "aes_share.h"
 #include <stdio.h>
 
 

@@ -263,6 +263,7 @@ int encrypt_find_different(byte in[16],byte out[16],byte key[16],byte outex[16],
 	return current_cipher_number;//返回加密次数
 }
 
+/*
 //动态数组实现，有bug
 int encrypt_find_different_dynamic_array(byte in[16],byte out[16],byte key[16],
 	byte outex[16],int n,int nt,int base,byte* delta,byte differential_cipher_4_error[4][4]){
@@ -356,3 +357,4 @@ int encrypt_find_different_dynamic_array(byte in[16],byte out[16],byte key[16],
 	return current_cipher_number;//返回加密次数
 }
 
+*/
