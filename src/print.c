@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "print.h"
 #include "aes_rp.h"
-#include <stdio.h>
 #include "encrypt.h"
 typedef unsigned char byte;
 
