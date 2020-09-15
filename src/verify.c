@@ -1,10 +1,5 @@
 #include "verify.h"
-#include "filter.h"
-#include "difftribute_table.h"
-#include "aes_rp.h"
-#include "recovery.h"
-#include "aes_share.h"
-#include <stdio.h>
+
 
 
 int verify_online_key(byte guess_key_10round[16][16],byte key_10round[16],byte w[176],int candidiate_key_count[16],

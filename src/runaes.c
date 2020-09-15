@@ -192,7 +192,7 @@ int main(){
 			int relationship_delta_difference_cipher[4][4] = {{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1}};//记录一组差分值对应第几组delta
 			int diff_delta_count[4]={0,0,0,0};//记录一组差分值能够匹配几组delta
 			byte cipher_verify[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//验证的时候使用
-			second_fail_encrypt_num[e] += encrypt_find_different(in,out,key,outex,n,nt,base,&delta,differential_cipher_4_error,dc,
+			second_fail_encrypt_num[e] = encrypt_find_different(in,out,key,outex,n,nt,base,&delta,differential_cipher_4_error,dc,
 				relationship_delta_difference_cipher,diff_delta_count,&appear_4_but_not_match,&no_chain_num,&more_chain_num,
 				&match_four_num,cipher_verify);	
 			all_encrypt_num[e] += second_fail_encrypt_num[e];
@@ -217,7 +217,7 @@ int main(){
 			int relationship_delta_difference_cipher[4][4] = {{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1}};//记录一组差分值对应第几组delta
 			int diff_delta_count[4]={0,0,0,0};//记录一组差分值能够匹配几组delta
 			byte cipher_verify[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//验证的时候使用
-			second_out_time_encrypt_num[e] += encrypt_find_different(in,out,key,outex,n,nt,base,&delta,differential_cipher_4_error,dc,
+			second_out_time_encrypt_num[e] = encrypt_find_different(in,out,key,outex,n,nt,base,&delta,differential_cipher_4_error,dc,
 				relationship_delta_difference_cipher,diff_delta_count,&appear_4_but_not_match,&no_chain_num,&more_chain_num,
 				&match_four_num,cipher_verify);	
 			all_encrypt_num[e] += second_out_time_encrypt_num[e];
@@ -235,7 +235,7 @@ int main(){
 				guess_key_10round,key_10round,w,diff_delta_count,&second_success_num_in_out_time,&second_fail_num_in_out_time,cipher_verify,in,n,nt,base,key,
 				&second_out_time_num_in_out_time,&other_fail_num);
 		}
-		print_encrypt_num( first_encrypt_num, all_encrypt_num, second_fail_encrypt_num, second_out_time_encrypt_num);
+		
 
 		fpWrite = fopen("experiment.txt", "a+");
 		printf("second_encrypt_num:%d\n",all_encrypt_num[e]);
@@ -256,6 +256,7 @@ int main(){
 			second_out_time_num_in_fail, second_success_num_in_out_time, second_fail_num_in_out_time,
 			second_out_time_num_in_out_time, other_fail_num, no_chain_num, more_chain_num, match_four_num, invalid_error_num);
 	}	
+	print_encrypt_num( first_encrypt_num, all_encrypt_num, second_fail_encrypt_num, second_out_time_encrypt_num);
 	int sum = 0;
 	int max = 0;
 	int min = 10000;

@@ -4,10 +4,6 @@
 #include "encrypt.h"
 typedef unsigned char byte;
 
-void prinxx(){
-	printf("aaaaaa\n");
-}
-
 void print_4_by_4(byte temp[16]){
 	FILE *fpWrite = fopen("experiment.txt", "a+");
 	for(int j=0;j<16;j++){
