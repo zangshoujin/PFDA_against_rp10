@@ -1,6 +1,8 @@
 #ifndef __encrypt_h__
 #define __encrypt_h__
 
+#include "recovery.h"
+
 typedef unsigned char byte;
 typedef int bool;
 #define true 1
