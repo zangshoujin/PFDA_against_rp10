@@ -207,7 +207,7 @@ int verify_offline_key(byte guess_key_10round[16][16],byte key_10round[16],byte 
 															for(int a14=0;a14<candidiate_key_count[14];a14++){
 																for(int a15=0;a15<candidiate_key_count[15];a15++){
 																	verify_encrypt_num++;
-																	if(verify_encrypt_num>=33554432){
+																	if(verify_encrypt_num >= OverTime_Num){
 																		/*
 																			2的30次方1073741824  
 																			2的20次方1048576
