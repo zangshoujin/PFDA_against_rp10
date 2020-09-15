@@ -252,7 +252,7 @@ int main(){
 		
 		print_count(first_success_num,first_fail_num,first_out_time_num, second_success_num_in_fail, second_fail_num_in_fail,
 			second_out_time_num_in_fail, second_success_num_in_out_time, second_fail_num_in_out_time,
-			second_out_time_num_in_out_time, other_fail_num, no_chain_num, more_chain_num, match_four_num, invalid_error_num);
+			second_out_time_num_in_out_time, other_fail_num, no_chain_num, more_chain_num, match_four_num, invalid_error_num,overtime_success_num);
 	}	
 	print_encrypt_num( first_encrypt_num, all_encrypt_num, second_fail_encrypt_num, second_out_time_encrypt_num);
 	int sum = 0;
@@ -278,7 +278,7 @@ int main(){
 
 	print_count(first_success_num,first_fail_num,first_out_time_num, second_success_num_in_fail, second_fail_num_in_fail,
 			second_out_time_num_in_fail, second_success_num_in_out_time, second_fail_num_in_out_time,
-			second_out_time_num_in_out_time, other_fail_num, no_chain_num, more_chain_num, match_four_num, invalid_error_num);
+			second_out_time_num_in_out_time, other_fail_num, no_chain_num, more_chain_num, match_four_num, invalid_error_num, overtime_success_num);
 
 	finish = clock(); 
 	duration = (double)(finish - start) / CLOCKS_PER_SEC;  
