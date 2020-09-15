@@ -1,6 +1,9 @@
 #ifndef __difftribute_h__
 #define __difftribute_h__
-
+typedef unsigned char byte;
+typedef int bool;
+#define true 1
+#define false 0
 extern struct In_Out_Diff{
 	byte in_diff;
 	byte in1;
