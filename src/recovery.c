@@ -100,36 +100,3 @@ int recovery_10round_key(byte delta,byte differential_cipher_4_error[4][4],byte 
 	}	
 	return 1;
 }
-
-int recovery_main_key(byte key_10round[16],byte main_key[16]){
-	byte temp[4];
-	byte w[176];
-	byte rcon[10];
-	setrcon(rcon);
-	
-	for(int i=0;i<16;i++)
-		w[160+i]=key_10round[i];
-
-	for(int i=156;i>=0;i-=4){
-		for(int j=0;j<4;j++)
-			temp[j]=w[i+12+j];
-		if((i % 16)==0){
-			temp[0]=subbyte(w[i+13]) ^ rcon[i/16];
-			temp[1]=subbyte(w[i+14]);
-			temp[2]=subbyte(w[i+15]);
-			temp[3]=subbyte(w[i+12]);
-		}
-		for(int j=0;j<4;j++)
-			w[i+j]=w[i+j+16] ^ temp[j];
-	}
-
-	for(int i=0;i<16;i++){
-		main_key[i] = w[i];
-	}
-	// printf("求得初始密钥是：\n");	
-	// for(int i=0;i<16;i++){
-	// 	printf("%02x,",w[i]);
-	// 	if((i+1)%4==0)printf("\n");
-	// }
-	return 0;
-}
