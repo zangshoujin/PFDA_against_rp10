@@ -65,6 +65,7 @@ int random_in_key(byte in[16],byte out[16],byte key[16],byte outex[16],int nt,by
 }
 
 int main(){
+	prinxx();
 	clock_t start,middle1,middle2,finish;
    	double duration;
 	start = clock();
