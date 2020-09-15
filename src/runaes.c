@@ -255,49 +255,48 @@ int main(){
 		print_count(first_success_num,first_fail_num,first_out_time_num, second_success_num_in_fail, second_fail_num_in_fail,
 			second_out_time_num_in_fail, second_success_num_in_out_time, second_fail_num_in_out_time,
 			second_out_time_num_in_out_time, other_fail_num, no_chain_num, more_chain_num, match_four_num, invalid_error_num);
-			
-		int sum = 0;
-		int max = 0;
-		int min = 10000;
-		for(int i=0;i<Experment_num;i++){
-			sum += all_encrypt_num[i];
-			if(all_encrypt_num[i]==0){//将无效错误的情况去掉
-				continue;
-			}
-			if(all_encrypt_num[i]>max)
-				max = all_encrypt_num[i];
-			if(all_encrypt_num[i]<min)
-				min = all_encrypt_num[i];
+	}	
+	int sum = 0;
+	int max = 0;
+	int min = 10000;
+	for(int i=0;i<Experment_num;i++){
+		sum += all_encrypt_num[i];
+		if(all_encrypt_num[i]==0){//将无效错误的情况去掉
+			continue;
 		}
-		fpWrite = fopen("experiment.txt", "a+");
-		printf("\n总实验次数:%d\n",Experment_num);
-		fprintf(fpWrite,"\n总实验次数:%d\n",Experment_num);
-		printf("share个数:%d\n",n);
-		fprintf(fpWrite,"share个数:%d\n",n);
-		printf("平均需要加密%d次才能找到16个字节。\n最多需要%d次，最少需要%d次。\n",sum/Experment_num,max,min);
-		fprintf(fpWrite,"平均需要加密%d次才能找到16个字节。\n最多需要%d次，最少需要%d次。\n",sum/Experment_num,max,min);
-
-		print_count(first_success_num,first_fail_num,first_out_time_num, second_success_num_in_fail, second_fail_num_in_fail,
-				second_out_time_num_in_fail, second_success_num_in_out_time, second_fail_num_in_out_time,
-				second_out_time_num_in_out_time, other_fail_num, no_chain_num, more_chain_num, match_four_num, invalid_error_num);
-
-		finish = clock(); 
-		duration = (double)(finish - start) / CLOCKS_PER_SEC;  
-		printf("总执行时间：%f seconds\n", duration ); 
-		fprintf(fpWrite,"总执行时间：%f seconds\n", duration );
-		fclose(fpWrite); 
-		fpWrite = fopen("excute_time.txt","a+");
-		printf("每次实验的执行时间:\n");
-		fprintf(fpWrite,"每次实验的执行时间:\n");
-		for(int i=0;i<Experment_num;i++){
-			printf("%fs\n",excute_time[i]);
-			fprintf(fpWrite,"%f\n",excute_time[i]);
-		}
-		printf("\n");
-		fprintf(fpWrite,"\n");
-		fclose(fpWrite);
-		return 0;
+		if(all_encrypt_num[i]>max)
+			max = all_encrypt_num[i];
+		if(all_encrypt_num[i]<min)
+			min = all_encrypt_num[i];
 	}
+	fpWrite = fopen("experiment.txt", "a+");
+	printf("\n总实验次数:%d\n",Experment_num);
+	fprintf(fpWrite,"\n总实验次数:%d\n",Experment_num);
+	printf("share个数:%d\n",n);
+	fprintf(fpWrite,"share个数:%d\n",n);
+	printf("平均需要加密%d次才能找到16个字节。\n最多需要%d次，最少需要%d次。\n",sum/Experment_num,max,min);
+	fprintf(fpWrite,"平均需要加密%d次才能找到16个字节。\n最多需要%d次，最少需要%d次。\n",sum/Experment_num,max,min);
+
+	print_count(first_success_num,first_fail_num,first_out_time_num, second_success_num_in_fail, second_fail_num_in_fail,
+			second_out_time_num_in_fail, second_success_num_in_out_time, second_fail_num_in_out_time,
+			second_out_time_num_in_out_time, other_fail_num, no_chain_num, more_chain_num, match_four_num, invalid_error_num);
+
+	finish = clock(); 
+	duration = (double)(finish - start) / CLOCKS_PER_SEC;  
+	printf("总执行时间：%f seconds\n", duration ); 
+	fprintf(fpWrite,"总执行时间：%f seconds\n", duration );
+	fclose(fpWrite); 
+	fpWrite = fopen("excute_time.txt","a+");
+	printf("每次实验的执行时间:\n");
+	fprintf(fpWrite,"每次实验的执行时间:\n");
+	for(int i=0;i<Experment_num;i++){
+		printf("%fs\n",excute_time[i]);
+		fprintf(fpWrite,"%f\n",excute_time[i]);
+	}
+	printf("\n");
+	fprintf(fpWrite,"\n");
+	fclose(fpWrite);
+	return 0;
 }
 
 /*
