@@ -92,6 +92,8 @@ int main(){
 	int second_out_time_num_in_fail = 0;
 	int second_out_time_num_in_out_time = 0;
 	int overtime_success_num = 0;//超过设定的复杂度，但是攻击成功了
+	int overtime_fail_num = 0;//超过设定的复杂度，但是攻击失败
+	int overtime_overtime_num = 0;//超过设定的复杂度，真的超时了
 	for(int e=0;e<Experment_num;e++){
 		middle1 = clock();
 		FILE *fpWrite ;
@@ -252,7 +254,8 @@ int main(){
 		
 		print_count(first_success_num,first_fail_num,first_out_time_num, second_success_num_in_fail, second_fail_num_in_fail,
 			second_out_time_num_in_fail, second_success_num_in_out_time, second_fail_num_in_out_time,
-			second_out_time_num_in_out_time, other_fail_num, no_chain_num, more_chain_num, match_four_num, invalid_error_num,overtime_success_num);
+			second_out_time_num_in_out_time, other_fail_num, no_chain_num, more_chain_num, match_four_num, invalid_error_num,
+			overtime_success_num,overtime_fail_num,overtime_overtime_num);
 	}	
 	print_encrypt_num( first_encrypt_num, all_encrypt_num, second_fail_encrypt_num, second_out_time_encrypt_num);
 	int sum = 0;
@@ -275,13 +278,15 @@ int main(){
 	fprintf(fpWrite,"share个数:%d\n",n);
 	printf("平均需要加密%d次才能找到16个字节。\n最多需要%d次，最少需要%d次。\n",sum/Experment_num,max,min);
 	fprintf(fpWrite,"平均需要加密%d次才能找到16个字节。\n最多需要%d次，最少需要%d次。\n",sum/Experment_num,max,min);
-
+	fclose(fpWrite);
 	print_count(first_success_num,first_fail_num,first_out_time_num, second_success_num_in_fail, second_fail_num_in_fail,
 			second_out_time_num_in_fail, second_success_num_in_out_time, second_fail_num_in_out_time,
-			second_out_time_num_in_out_time, other_fail_num, no_chain_num, more_chain_num, match_four_num, invalid_error_num, overtime_success_num);
+			second_out_time_num_in_out_time, other_fail_num, no_chain_num, more_chain_num, match_four_num, invalid_error_num, 
+			overtime_success_num,overtime_fail_num,overtime_overtime_num);
 
 	finish = clock(); 
 	duration = (double)(finish - start) / CLOCKS_PER_SEC;  
+	fpWrite = fopen("experiment.txt", "a+");
 	printf("总执行时间：%f seconds\n", duration ); 
 	fprintf(fpWrite,"总执行时间：%f seconds\n", duration );
 	fclose(fpWrite); 

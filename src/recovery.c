@@ -1,7 +1,5 @@
 #include "recovery.h"
 
-
-
 int recovery_main_key(byte key_10round[16],byte main_key[16]){
 	byte temp[4];
 	byte w[176];
