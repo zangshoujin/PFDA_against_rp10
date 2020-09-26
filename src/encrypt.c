@@ -3,7 +3,7 @@
 
 int encrypt_find_different(byte in[16],byte out[16],byte key[16],byte outex[16],int n,int nt,int base,byte* delta,
 	byte differential_cipher_4_error[4][4],struct Different_Cipher dc[4],int relationship_delta_difference_cipher[4][4],
-	int diff_delta_count[4],int* appear_4_but_not_match,int* no_chain,int* more_chain,int* match_four,byte cipher_verify[16]){//第九轮出错导致密文四个字节不同的差分数组
+	int diff_delta_count[4],int* appear_4_but_not_match,int* no_chain,int* more_chain,int* one_chain,byte cipher_verify[16]){//第九轮出错导致密文四个字节不同的差分数组
 	
 	int error_local[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//记录错误的位置用
 	byte stored_cipher[Cipher_num][16];
@@ -164,7 +164,7 @@ int encrypt_find_different(byte in[16],byte out[16],byte key[16],byte outex[16],
 	fprintf(fpWrite,"delta:0x%02x\t2*delta:0x%02x\t3*delta:0x%02x\n",delta_value,delta2,delta3);
 	fclose(fpWrite);
 	int return_num = first_filter_difference_chain(delta_value,differential_cipher_4_error,arr_delta,
-	relationship_delta_difference_cipher,diff_delta_count,appear_4_but_not_match,no_chain,more_chain,match_four);
+	relationship_delta_difference_cipher,diff_delta_count,appear_4_but_not_match,no_chain,more_chain,one_chain);
 
 	int no_chain_flag = 0;
 	while(return_num <4){
