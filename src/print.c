@@ -40,7 +40,6 @@ int test_key(byte in[16],byte out[16],byte key[16],byte outex[16],int n,int nt,i
 	fprintf(fpWrite,"**********开始线***********\n");
 	fclose(fpWrite);
 	run_aes(&aes_rp,in,out,key,outex,nt,base,w);
-	// run_aes_share(in,out,key,outex,n,&subbyte_rp_share,nt,base);
 	// printf("密文是：\n");
 	// print_4_by_4(out);
 	printf("---------结束线-====------\n");
