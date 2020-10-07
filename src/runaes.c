@@ -18,6 +18,7 @@
 #include "recovery.h"
 #include "print.h"
 #include "encrypt.h"
+#include "repeat_attack.h"
 
 int random_in_key(byte in[16],byte out[16],byte key[16],byte outex[16],int nt,byte w[176]){
 	//随机注入错误
@@ -73,33 +74,41 @@ int main(){
 	diff_table();
 	int all_encrypt_num[Experment_num] ;
 	int first_encrypt_num[Experment_num] ;
-	int second_fail_encrypt_num[Experment_num] ;
-	int second_out_time_encrypt_num[Experment_num] ;
+	int later_fail_encrypt_num[attack_round][Experment_num];//0没有用到，从1开始用的
+	int later_out_time_encrypt_num[attack_round][Experment_num] ;//0没有用到，从1开始用的
 	for(int exp=0;exp<Experment_num;exp++){
 		all_encrypt_num[exp] = 0;
 		first_encrypt_num[exp] = 0;
-		second_fail_encrypt_num[exp] = 0;
-		second_out_time_encrypt_num[exp] = 0;
+	}
+	for(int i=0;i<attack_round;i++){
+		for(int j=0;j<Experment_num;j++){
+			later_fail_encrypt_num[i][j] = 0;
+			later_out_time_encrypt_num[i][j] = 0;
+		}
 	}
 	double excute_time[Experment_num];//每次实验的执行时间，先不统计，因为现在还涉及读写文件，会消耗大量时间
+
 	int first_success_num = 0;//成功的次数
-	int second_success_num_in_fail = 0;
-	int second_success_num_in_out_time = 0;
 	int first_fail_num = 0;//失败的次数
-	int second_fail_num_in_fail = 0;
-	int second_fail_num_in_out_time = 0;
+	int first_timeout_num = 0;//超时的次数
+
 	int other_fail_num = 0;//其他未知的失败次数
 	int appear_4_but_not_match = 0;//
 	int no_chain_num = 0;//找不到链的情况（继续找的情况）
 	int more_chain_num = 0;//匹配多条链的情况
 	int one_chain_num = 0;//刚好匹配四条链的情况
 	int invalid_error_num = 0;//注入无效错误的情况
-	int first_out_time_num = 0;//超时的次数
-	int second_out_time_num_in_fail = 0;
-	int second_out_time_num_in_out_time = 0;
-	int overtime_success_num = 0;//超过设定的复杂度，但是攻击成功了
-	int overtime_fail_num = 0;//超过设定的复杂度，但是攻击失败
-	int overtime_overtime_num = 0;//超过设定的复杂度，真的超时了
+	
+	int success_num_in_fail[attack_round] = {0};
+	int success_num_in_timeout[attack_round] = {0};
+	int fail_num_in_fail[attack_round] = {0};
+	int fail_num_in_timeout[attack_round] = {0};
+	int timeout_num_in_fail[attack_round] = {0};
+	int timeout_num_in_timeout[attack_round] = {0};
+
+	int success_num_if_timeout = 0;//超过设定的复杂度，但是攻击成功了
+	int fail_num_if_timeout = 0;//超过设定的复杂度，但是攻击失败
+	int timeout_num_if_timeout = 0;//超过设定的复杂度，真的超时了
 	for(int e=0;e<Experment_num;e++){
 		middle1 = clock();
 		FILE *fpWrite ;
@@ -172,7 +181,7 @@ int main(){
 		byte cipher_verify[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//验证的时候使用
 		all_encrypt_num[e] = encrypt_find_different(in,out,key,outex,n,nt,base,&delta,differential_cipher_4_error,dc,
 			relationship_delta_difference_cipher,diff_delta_count,&appear_4_but_not_match,&no_chain_num,&more_chain_num,
-			&one_chain_num,cipher_verify);			
+			&one_chain_num,cipher_verify);
 		first_encrypt_num[e] = all_encrypt_num[e];
 		fpWrite = fopen("experiment.txt", "a+");
 		printf("first_encrypt_num:%d\n\n",all_encrypt_num[e]);
@@ -188,60 +197,58 @@ int main(){
 		byte delta3 = mult(3 , delta);
 		byte arr_delta[4][4] = {{delta2,delta3,delta,delta},{delta,delta2,delta3,delta},
 			{delta,delta,delta2,delta3},{delta3,delta,delta,delta2}};
-		int re_rk = recovery_10round_key(delta,differential_cipher_4_error,arr_delta,relationship_delta_difference_cipher,dc,
+		int re_rk = 0;
+		re_rk = recovery_10round_key(delta,differential_cipher_4_error,arr_delta,relationship_delta_difference_cipher,dc,
 			guess_key_10round,key_10round,w,diff_delta_count,&first_success_num,&first_fail_num,cipher_verify,in,n,nt,base,key,
-			&first_out_time_num,&other_fail_num,&overtime_success_num,&overtime_fail_num,&overtime_overtime_num);
-		if(re_rk == -1){
-			byte delta = 0;
-			byte differential_cipher_4_error[4][4]={0};
-			struct Different_Cipher dc[4];
-			int relationship_delta_difference_cipher[4][4] = {{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1}};//记录一组差分值对应第几组delta
-			int diff_delta_count[4]={0,0,0,0};//记录一组差分值能够匹配几组delta
-			byte cipher_verify[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//验证的时候使用
-			second_fail_encrypt_num[e] = encrypt_find_different(in,out,key,outex,n,nt,base,&delta,differential_cipher_4_error,dc,
-				relationship_delta_difference_cipher,diff_delta_count,&appear_4_but_not_match,&no_chain_num,&more_chain_num,
-				&one_chain_num,cipher_verify);	
-			all_encrypt_num[e] += second_fail_encrypt_num[e];
-			byte guess_key_10round[16][16]={{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-										{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-										{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-										{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
-			byte key_10round[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//存放求得的第十轮子密钥
-			byte main_key[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//存放求得的初始密钥
-			byte delta2 = mult(2 , delta);
-			byte delta3 = mult(3 , delta);
-			byte arr_delta[4][4] = {{delta2,delta3,delta,delta},{delta,delta2,delta3,delta},
-				{delta,delta,delta2,delta3},{delta3,delta,delta,delta2}};
-			recovery_10round_key(delta,differential_cipher_4_error,arr_delta,relationship_delta_difference_cipher,dc,
-				guess_key_10round,key_10round,w,diff_delta_count,&second_success_num_in_fail,&second_fail_num_in_fail,cipher_verify,in,n,nt,base,key,
-				&second_out_time_num_in_fail,&other_fail_num,&overtime_success_num,&overtime_fail_num,&overtime_overtime_num);
+			&first_timeout_num,&other_fail_num,&success_num_if_timeout,&fail_num_if_timeout,&timeout_num_if_timeout);
+
+		if(attack_round>1){
+			for(int i=1;i<attack_round;i++){
+				if(re_rk == -1){
+					re_rk = repeat_attack(in,out,key,outex,n, nt, base, &appear_4_but_not_match,&no_chain_num,&more_chain_num,&one_chain_num,all_encrypt_num,
+						later_fail_encrypt_num, w,e,&success_num_in_fail[i],&fail_num_in_fail[i],&timeout_num_in_fail[i],&other_fail_num,&success_num_if_timeout,
+						&fail_num_if_timeout,&timeout_num_if_timeout,i);
+				}
+				else if(re_rk == -3){
+					re_rk = repeat_attack(in,out,key,outex,n, nt, base, &appear_4_but_not_match,&no_chain_num,&more_chain_num,&one_chain_num,all_encrypt_num,
+						later_fail_encrypt_num, w,e,&success_num_in_timeout[i],&fail_num_in_timeout[i],&timeout_num_in_timeout[i],&other_fail_num,&success_num_if_timeout,
+						&fail_num_if_timeout,&timeout_num_if_timeout,i);
+				}
+				else if(re_rk == 1){
+					break;
+				}
+			}
 		}
-		else if(re_rk == -3){
-			byte delta = 0;
-			byte differential_cipher_4_error[4][4]={0};
-			struct Different_Cipher dc[4];
-			int relationship_delta_difference_cipher[4][4] = {{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1},{-1,-1,-1,-1}};//记录一组差分值对应第几组delta
-			int diff_delta_count[4]={0,0,0,0};//记录一组差分值能够匹配几组delta
-			byte cipher_verify[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//验证的时候使用
-			second_out_time_encrypt_num[e] = encrypt_find_different(in,out,key,outex,n,nt,base,&delta,differential_cipher_4_error,dc,
-				relationship_delta_difference_cipher,diff_delta_count,&appear_4_but_not_match,&no_chain_num,&more_chain_num,
-				&one_chain_num,cipher_verify);	
-			all_encrypt_num[e] += second_out_time_encrypt_num[e];
-			byte guess_key_10round[16][16]={{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-										{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-										{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-										{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
-			byte key_10round[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//存放求得的第十轮子密钥
-			byte main_key[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//存放求得的初始密钥
-			byte delta2 = mult(2 , delta);
-			byte delta3 = mult(3 , delta);
-			byte arr_delta[4][4] = {{delta2,delta3,delta,delta},{delta,delta2,delta3,delta},
-				{delta,delta,delta2,delta3},{delta3,delta,delta,delta2}};
-			recovery_10round_key(delta,differential_cipher_4_error,arr_delta,relationship_delta_difference_cipher,dc,
-				guess_key_10round,key_10round,w,diff_delta_count,&second_success_num_in_out_time,&second_fail_num_in_out_time,cipher_verify,in,n,nt,base,key,
-				&second_out_time_num_in_out_time,&other_fail_num,&overtime_success_num,&overtime_fail_num,&overtime_overtime_num);
-		}
-		
+		// if(re_rk == -1){//第二轮攻击
+		// 	int re_rk = repeat_attack(in,out,key,outex,n, nt, base, &appear_4_but_not_match,&no_chain_num,&more_chain_num,&one_chain_num,all_encrypt_num,
+		// 		later_fail_encrypt_num, w,e,&second_success_num_in_fail,&second_fail_num_in_fail,&second_timeout_num_in_fail,&other_fail_num,&success_num_in_timeout,
+		// 		&fail_num_in_timeout,&timeout_num_in_timeout);
+		// 	if(re_rk == -1){//第三轮攻击
+		// 		int re_rk = repeat_attack(in,out,key,outex,n, nt, base, &appear_4_but_not_match,&no_chain_num,&more_chain_num,&one_chain_num,all_encrypt_num,
+		// 			later_fail_encrypt_num, w,e,&third_success_num_in_fail,&third_fail_num_in_fail,&third_timeout_num_in_fail,&other_fail_num,&success_num_in_timeout,
+		// 			&fail_num_in_timeout,&timeout_num_in_timeout);
+		// 	}
+		// 	else if(re_rk == -3){//第三轮攻击
+		// 		int re_rk = repeat_attack(in,out,key,outex,n, nt, base, &appear_4_but_not_match,&no_chain_num,&more_chain_num,&one_chain_num,all_encrypt_num,
+		// 			later_fail_encrypt_num, w,e,&third_success_num_in_timeout,&third_fail_num_in_timeout,&third_timeout_num_in_timeout,&other_fail_num,&success_num_in_timeout,
+		// 			&fail_num_in_timeout,&timeout_num_in_timeout);
+		// 	}
+		// }
+		// else if(re_rk == -3){//第二轮攻击
+		// 	int re_rk = repeat_attack(in,out,key,outex,n, nt, base, &appear_4_but_not_match,&no_chain_num,&more_chain_num,&one_chain_num,all_encrypt_num,
+		// 		later_fail_encrypt_num, w,e,&second_success_num_in_timeout,&second_fail_num_in_timeout,&second_timeout_num_in_timeout,&other_fail_num,&success_num_in_timeout,
+		// 		&fail_num_in_timeout,&timeout_num_in_timeout);
+		// 	if(re_rk == -1){//第三轮攻击
+		// 		int re_rk = repeat_attack(in,out,key,outex,n, nt, base, &appear_4_but_not_match,&no_chain_num,&more_chain_num,&one_chain_num,all_encrypt_num,
+		// 			later_fail_encrypt_num, w,e,&third_success_num_in_fail,&third_fail_num_in_fail,&third_timeout_num_in_fail,&other_fail_num,&success_num_in_timeout,
+		// 			&fail_num_in_timeout,&timeout_num_in_timeout);
+		// 	}
+		// 	else if(re_rk == -3){//第三轮攻击
+		// 		int re_rk = repeat_attack(in,out,key,outex,n, nt, base, &appear_4_but_not_match,&no_chain_num,&more_chain_num,&one_chain_num,all_encrypt_num,
+		// 			later_fail_encrypt_num, w,e,&third_success_num_in_timeout,&third_fail_num_in_timeout,&third_timeout_num_in_timeout,&other_fail_num,&success_num_in_timeout,
+		// 			&fail_num_in_timeout,&timeout_num_in_timeout);
+		// 	}
+		// }
 
 		fpWrite = fopen("experiment.txt", "a+");
 		printf("second_encrypt_num:%d\n",all_encrypt_num[e]);
@@ -258,12 +265,12 @@ int main(){
 		fprintf(fpWrite,"本次实验执行时间:%f\n",excute_time[e]);
 		fclose(fpWrite);
 		
-		print_count(first_success_num,first_fail_num,first_out_time_num, second_success_num_in_fail, second_fail_num_in_fail,
-			second_out_time_num_in_fail, second_success_num_in_out_time, second_fail_num_in_out_time,
-			second_out_time_num_in_out_time, other_fail_num, no_chain_num, more_chain_num, one_chain_num, invalid_error_num,
-			overtime_success_num,overtime_fail_num,overtime_overtime_num);
+		print_count(first_success_num,first_fail_num,first_timeout_num, success_num_in_fail, fail_num_in_fail,
+			timeout_num_in_fail, success_num_in_timeout, fail_num_in_timeout,
+			timeout_num_in_timeout, other_fail_num, no_chain_num, more_chain_num, one_chain_num, invalid_error_num,
+			success_num_if_timeout,fail_num_if_timeout,timeout_num_if_timeout);
 	}	
-	print_encrypt_num( first_encrypt_num, all_encrypt_num, second_fail_encrypt_num, second_out_time_encrypt_num);
+	print_encrypt_num( first_encrypt_num, all_encrypt_num, later_fail_encrypt_num, later_out_time_encrypt_num);
 	int sum = 0;
 	int max = 0;
 	int min = 10000;
@@ -285,15 +292,15 @@ int main(){
 	printf("平均需要加密%d次才能找到16个字节。\n最多需要%d次，最少需要%d次。\n",sum/Experment_num,max,min);
 	fprintf(fpWrite,"平均需要加密%d次才能找到16个字节。\n最多需要%d次，最少需要%d次。\n",sum/Experment_num,max,min);
 	fclose(fpWrite);
-	print_count(first_success_num,first_fail_num,first_out_time_num, second_success_num_in_fail, second_fail_num_in_fail,
-			second_out_time_num_in_fail, second_success_num_in_out_time, second_fail_num_in_out_time,
-			second_out_time_num_in_out_time, other_fail_num, no_chain_num, more_chain_num, one_chain_num, invalid_error_num, 
-			overtime_success_num,overtime_fail_num,overtime_overtime_num);
+	print_count(first_success_num,first_fail_num,first_timeout_num, success_num_in_fail, fail_num_in_fail,
+		timeout_num_in_fail, success_num_in_timeout, fail_num_in_timeout,
+		timeout_num_in_timeout, other_fail_num, no_chain_num, more_chain_num, one_chain_num, invalid_error_num,
+		success_num_if_timeout,fail_num_if_timeout,timeout_num_if_timeout);
 
 	finish = clock(); 
-	duration = (double)(finish - start) / CLOCKS_PER_SEC;  
+	duration = (double)(finish - start) / CLOCKS_PER_SEC; 
 	fpWrite = fopen("experiment.txt", "a+");
-	printf("总执行时间：%f seconds\n", duration ); 
+	printf("总执行时间：%f seconds\n", duration );
 	fprintf(fpWrite,"总执行时间：%f seconds\n", duration );
 	fclose(fpWrite); 
 	fpWrite = fopen("excute_time.txt","a+");

@@ -36,9 +36,9 @@ int recovery_main_key(byte key_10round[16],byte main_key[16]){
 
 int recovery_10round_key(byte delta,byte differential_cipher_4_error[4][4],byte arr_delta[4][4],
 	int relationship_delta_difference_cipher[4][4],struct Different_Cipher dc[4],byte guess_key_10round[16][16],
-	byte key_10round[16],byte w[176],int diff_delta_count[4],int* success_num,int* first_fail_num,byte cipher_verify[16]
-	,byte in[16],int n,int nt,int base,byte reall_main_key[16],int *first_out_time_num,int *other_fail_num,int *overtime_success_num,
-	int *overtime_fail_num,int *overtime_overtime_num){
+	byte key_10round[16],byte w[176],int diff_delta_count[4],int* success_num,int* fail_num,byte cipher_verify[16]
+	,byte in[16],int n,int nt,int base,byte reall_main_key[16],int *timeout_num,int *other_fail_num,int *success_num_in_timeout,
+	int *fail_num_in_timeout,int *timeout_num_in_timeout){
 
 	int chain_num[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 	int candidiate_key_count[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -100,17 +100,17 @@ int recovery_10round_key(byte delta,byte differential_cipher_4_error[4][4],byte 
 	printf("\nchain_sum:%lld\n",chain_sum);
     fprintf(fpWrite,"\nchain_sum:%lld\n",chain_sum);
     fclose(fpWrite);
-	int re_vok = verify_offline_key(guess_key_10round,key_10round,w,candidiate_key_count,success_num,first_fail_num,cipher_verify,
-	in,n,nt,base,reall_main_key,first_out_time_num,other_fail_num);
+	int re_vok = verify_offline_key(guess_key_10round,key_10round,w,candidiate_key_count,success_num,fail_num,cipher_verify,
+		in,n,nt,base,reall_main_key,timeout_num,other_fail_num);
 
-	if(re_vok == 1 && chain_sum >= OverTime_Num){
-        (*overtime_success_num)++;
+	if(re_vok == 1 && chain_sum >= timeout_Num){
+        (*success_num_in_timeout)++;
     }
-	else if((re_vok == -1 || re_vok == -2) && chain_sum >= OverTime_Num){
-		(*overtime_fail_num)++;
+	else if((re_vok == -1 || re_vok == -2) && chain_sum >= timeout_Num){
+		(*fail_num_in_timeout)++;
 	}
-	else if(re_vok == -3 && chain_sum >= OverTime_Num){
-		(*overtime_overtime_num)++;
+	else if(re_vok == -3 && chain_sum >= timeout_Num){
+		(*timeout_num_in_timeout)++;
 	}
 	if(re_vok == -1){
 		return -1;

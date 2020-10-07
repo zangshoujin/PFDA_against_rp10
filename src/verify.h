@@ -11,7 +11,7 @@ typedef unsigned char byte;
 #include "aes_share.h"
 #include <stdio.h>
 
-#define OverTime_Num 33554432
+#define timeout_Num 33554432
 /*
 	2的30次方1073741824
 	2的20次方1048576

@@ -1,4 +1,5 @@
 #include "encrypt.h"
+#include "print.h"
 
 
 int encrypt_find_different(byte in[16],byte out[16],byte key[16],byte outex[16],int n,int nt,int base,byte* delta,
