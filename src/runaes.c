@@ -211,7 +211,7 @@ int main(){
 				}
 				else if(re_rk == -3){
 					re_rk = repeat_attack(in,out,key,outex,n, nt, base, &appear_4_but_not_match,&no_chain_num,&more_chain_num,&one_chain_num,all_encrypt_num,
-						later_fail_encrypt_num, w,e,&success_num_in_timeout[i],&fail_num_in_timeout[i],&timeout_num_in_timeout[i],&other_fail_num,&success_num_if_timeout,
+						later_out_time_encrypt_num, w,e,&success_num_in_timeout[i],&fail_num_in_timeout[i],&timeout_num_in_timeout[i],&other_fail_num,&success_num_if_timeout,
 						&fail_num_if_timeout,&timeout_num_if_timeout,i);
 				}
 				else if(re_rk == 1){
