@@ -17,4 +17,12 @@ void subbyte_rp_share_flr_mprgmat(byte *a,int n);
 void xor_loc(byte *a,byte *b,byte *c,int n);
 void xor_loc32(byte *a,byte *b,byte *c,int n);
 
+
+void subbyte_rp_share_flr_no_error(byte *a,int n);
+void subbyte_rp_share_ilr_no_error(byte *a,int n);
+void subbyte_rp_share_ilr2_no_error(byte *a,int n);
+void subbyte_rp_share_flr_mprg_no_error(byte *a,int n);
+void subbyte_rp_share_ilr_mprg_no_error(byte *a,int n);
+
+void subbyte_rp_share_flr_mprgmat_no_error(byte *a,int n);
 #endif

@@ -92,6 +92,12 @@ void subbyte_rp_share_flr(byte *a,int n)
   subbyte_rp_share_func(a,n,multshare_flr);
 }
 
+void subbyte_rp_share_flr_no_error(byte *a,int n)
+{
+  locality_refresh(a,n); 
+  subbyte_rp_share_func_no_error(a,n,multshare_flr);
+}
+
 int max(int a,int b)
 {
   if (a>b) return a;
@@ -146,6 +152,12 @@ void subbyte_rp_share_ilr(byte *a,int n)
   subbyte_rp_share_func(a,n,multshare_ilr);
 }
 
+void subbyte_rp_share_ilr_no_error(byte *a,int n)
+{
+  locality_refresh(a,n); 
+  subbyte_rp_share_func_no_error(a,n,multshare_ilr);
+}
+
 // multshare with internal locality refresh, improved version
 void multshare_ilr2(byte *a,byte *b,byte *c,int n)
 {
@@ -169,6 +181,12 @@ void subbyte_rp_share_ilr2(byte *a,int n)
 {
   locality_refresh(a,n); 
   subbyte_rp_share_func(a,n,multshare_ilr2);
+}
+
+void subbyte_rp_share_ilr2_no_error(byte *a,int n)
+{
+  locality_refresh(a,n); 
+  subbyte_rp_share_func_no_error(a,n,multshare_ilr2);
 }
 
 void multshare_flr_mprg(byte *a,byte *b,byte *c,int n)
@@ -199,7 +217,11 @@ void subbyte_rp_share_flr_mprg(byte *a,int n)
   subbyte_rp_share_func(a,n,multshare_flr_mprg);
 }
 
-
+void subbyte_rp_share_flr_mprg_no_error(byte *a,int n)
+{
+  locality_refresh_mprg(a,n);
+  subbyte_rp_share_func_no_error(a,n,multshare_flr_mprg);
+}
 
 void multshare_ilr_mprg(byte *a,byte *b,byte *c,int n)
 {
@@ -231,6 +253,12 @@ void subbyte_rp_share_ilr_mprg(byte *a,int n)
   subbyte_rp_share_func(a,n,multshare_ilr_mprg);
 }
 
+void subbyte_rp_share_ilr_mprg_no_error(byte *a,int n)
+{
+  locality_refresh_mprg(a,n);
+  subbyte_rp_share_func_no_error(a,n,multshare_ilr_mprg);
+}
+
 void multshare_flr_mprgmat(byte *a,byte *b,byte *c,int n)
 {
   locality_refresh_mprgmatabc(a,PRGA,n);
@@ -257,4 +285,9 @@ void multshare_flr_mprgmat(byte *a,byte *b,byte *c,int n)
 void subbyte_rp_share_flr_mprgmat(byte *a,int n)
 {
   subbyte_rp_share_func(a,n,multshare_flr_mprgmat);
+}
+
+void subbyte_rp_share_flr_mprgmat_no_error(byte *a,int n)
+{
+  subbyte_rp_share_func_no_error(a,n,multshare_flr_mprgmat);
 }
