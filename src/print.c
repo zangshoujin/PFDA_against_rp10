@@ -72,14 +72,16 @@ int print_count(int first_success_num,int first_fail_num,int first_out_time_num,
 	printf("first_out_time_num:%d\n",first_out_time_num);
 	fprintf(fpWrite,"first_out_time_num:%d\n",first_out_time_num);
 
+	int success_all_num = first_success_num;
 	for(int i=1;i<attack_round;i++){
+		success_all_num += success_num_in_fail[i];
 		printf("%d_success_num_in_fail:%d\n",i+1,success_num_in_fail[i]);
 		fprintf(fpWrite,"%d_success_num_in_fail:%d\n",i+1,success_num_in_fail[i]);
 		printf("%d_fail_num_in_fail:%d\n",i+1,fail_num_in_fail[i]);
 		fprintf(fpWrite, "%ds_fail_num_in_fail:%d\n",i+1,fail_num_in_fail[i]);
 		printf("%d_out_time_num_in_fail:%d\n",i+1,out_time_num_in_fail[i]);
 		fprintf(fpWrite,"%d_out_time_num_in_fail:%d\n",i+1,out_time_num_in_fail[i]);
-
+		success_all_num += success_num_in_out_time[i];
 		printf("%d_success_num_in_out_time:%d\n",i+1,success_num_in_out_time[i]);
 		fprintf(fpWrite,"%d_success_num_in_out_time:%d\n",i+1,success_num_in_out_time[i]);
 		printf("%d_fail_num_in_out_time:%d\n",i+1,fail_num_in_out_time[i]);
@@ -105,6 +107,10 @@ int print_count(int first_success_num,int first_fail_num,int first_out_time_num,
 	fprintf(fpWrite,"fail_num_in_timeout:%d\n",fail_num_in_timeout);
 	printf("timeout_num_in_timeout:%d\n",timeout_num_in_timeout);
 	fprintf(fpWrite,"timeout_num_in_timeout:%d\n",timeout_num_in_timeout);
+
+	printf("success_all_num:%d\n",success_all_num);
+	fprintf(fpWrite,"success_all_num:%d\n",success_all_num);
+
 	fclose(fpWrite);
 	return 0;
 }
