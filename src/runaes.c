@@ -2,12 +2,10 @@
 #include <time.h>
 #include <string.h>
 #include <math.h>
-#include "aes.h"
 #include "aes_rp.h"
 #include "aes_rp_prg.h"
 #include "share.h"
 #include "aes_share.h"
-#include "aes_htable.h"
 #include "common.h"
 #include "prg.h"
 #include "cvector.h"
@@ -17,16 +15,21 @@
 #include "verify.h"
 #include "recovery.h"
 #include "print.h"
-#include "encrypt.h"
 #include "repeat_attack.h"
+#include "encrypt.h"
 
 int random_in_key(byte in[16],byte out[16],byte key[16],byte outex[16],int nt,byte w[176]){
 	//随机注入错误
 	srand((unsigned)time(NULL) + rand());
-	byte loc = 0 + rand() % (256 - 0); 
-	byte value = 1 + rand() % (256 - 1); 
-	byte rel_value = get_taffineValue(loc);
-	set_taffineValue(loc, value);
+	byte loc;
+	byte value;
+	byte rel_value;
+	do{
+		loc= 0 + rand() % (256 - 0); 
+		value = 1 + rand() % (256 - 1);
+		rel_value = get_taffineValue(loc);
+		set_taffineValue(loc, value);
+	}while(rel_value==value);
 	printf("注入错误的位置是%02x,错误值是%02x,原值是%02x\n",loc,value,taffine_copy[loc]);
 	FILE *fpWrite = fopen("experiment.txt", "a+");
 	fprintf(fpWrite,"注入错误的位置是%02x,错误值是%02x,原值是%02x\n",loc,value,taffine_copy[loc]);
@@ -73,7 +76,7 @@ int main(){
   	int nt = 10;
 	diff_table();
 	int all_encrypt_num[Experment_num] ;
-	int first_encrypt_num[Experment_num] ;
+	int first_encrypt_num[Experment_num];
 	int later_fail_encrypt_num[attack_round][Experment_num];//0没有用到，从1开始用的
 	int later_out_time_encrypt_num[attack_round][Experment_num] ;//0没有用到，从1开始用的
 	for(int exp=0;exp<Experment_num;exp++){
@@ -109,9 +112,31 @@ int main(){
 	int success_num_if_timeout = 0;//超过设定的复杂度，但是攻击成功了
 	int fail_num_if_timeout = 0;//超过设定的复杂度，但是攻击失败
 	int timeout_num_if_timeout = 0;//超过设定的复杂度，真的超时了
+	FILE *fpWrite ;
+	printf("使用的掩码方案为\n");
+	fpWrite = fopen("experiment.txt", "a+");
+	fprintf(fpWrite,"使用的掩码方案为\n");
+	if(is_rp10){
+		printf("is_rp10\n");
+		fprintf(fpWrite,"is_rp10\n");
+	}
+	else if(is_rp10_flr){
+		printf("is_rp10_flr\n");
+		fprintf(fpWrite,"is_rp10_flr\n");
+	}
+	else if(is_rp10_ilr){
+		printf("is_rp10_ilr\n");
+		fprintf(fpWrite,"is_rp10_ilr\n");
+	}
+	else if(is_rp10_ilr2){
+		printf("is_rp10_ilr2\n");
+		fprintf(fpWrite,"is_rp10_ilr2\n");
+	}
+	fclose(fpWrite);
+
 	for(int e=0;e<Experment_num;e++){
 		middle1 = clock();
-		FILE *fpWrite ;
+		
 		if(Is_print){
 			fpWrite= fopen("encrypt_state.txt", "a+");
 			fprintf(fpWrite,"第%d次实验：\n",e);
@@ -199,7 +224,7 @@ int main(){
 			{delta,delta,delta2,delta3},{delta3,delta,delta,delta2}};
 		int re_rk = 0;
 		re_rk = recovery_10round_key(delta,differential_cipher_4_error,arr_delta,relationship_delta_difference_cipher,dc,
-			guess_key_10round,key_10round,w,diff_delta_count,&first_success_num,&first_fail_num,cipher_verify,in,n,nt,base,key,
+			guess_key_10round,w,diff_delta_count,&first_success_num,&first_fail_num,cipher_verify,in,n,nt,base,key,
 			&first_timeout_num,&other_fail_num,&success_num_if_timeout,&fail_num_if_timeout,&timeout_num_if_timeout);
 
 		if(attack_round>1){
@@ -219,37 +244,6 @@ int main(){
 				}
 			}
 		}
-		// if(re_rk == -1){//第二轮攻击
-		// 	int re_rk = repeat_attack(in,out,key,outex,n, nt, base, &appear_4_but_not_match,&no_chain_num,&more_chain_num,&one_chain_num,all_encrypt_num,
-		// 		later_fail_encrypt_num, w,e,&second_success_num_in_fail,&second_fail_num_in_fail,&second_timeout_num_in_fail,&other_fail_num,&success_num_in_timeout,
-		// 		&fail_num_in_timeout,&timeout_num_in_timeout);
-		// 	if(re_rk == -1){//第三轮攻击
-		// 		int re_rk = repeat_attack(in,out,key,outex,n, nt, base, &appear_4_but_not_match,&no_chain_num,&more_chain_num,&one_chain_num,all_encrypt_num,
-		// 			later_fail_encrypt_num, w,e,&third_success_num_in_fail,&third_fail_num_in_fail,&third_timeout_num_in_fail,&other_fail_num,&success_num_in_timeout,
-		// 			&fail_num_in_timeout,&timeout_num_in_timeout);
-		// 	}
-		// 	else if(re_rk == -3){//第三轮攻击
-		// 		int re_rk = repeat_attack(in,out,key,outex,n, nt, base, &appear_4_but_not_match,&no_chain_num,&more_chain_num,&one_chain_num,all_encrypt_num,
-		// 			later_fail_encrypt_num, w,e,&third_success_num_in_timeout,&third_fail_num_in_timeout,&third_timeout_num_in_timeout,&other_fail_num,&success_num_in_timeout,
-		// 			&fail_num_in_timeout,&timeout_num_in_timeout);
-		// 	}
-		// }
-		// else if(re_rk == -3){//第二轮攻击
-		// 	int re_rk = repeat_attack(in,out,key,outex,n, nt, base, &appear_4_but_not_match,&no_chain_num,&more_chain_num,&one_chain_num,all_encrypt_num,
-		// 		later_fail_encrypt_num, w,e,&second_success_num_in_timeout,&second_fail_num_in_timeout,&second_timeout_num_in_timeout,&other_fail_num,&success_num_in_timeout,
-		// 		&fail_num_in_timeout,&timeout_num_in_timeout);
-		// 	if(re_rk == -1){//第三轮攻击
-		// 		int re_rk = repeat_attack(in,out,key,outex,n, nt, base, &appear_4_but_not_match,&no_chain_num,&more_chain_num,&one_chain_num,all_encrypt_num,
-		// 			later_fail_encrypt_num, w,e,&third_success_num_in_fail,&third_fail_num_in_fail,&third_timeout_num_in_fail,&other_fail_num,&success_num_in_timeout,
-		// 			&fail_num_in_timeout,&timeout_num_in_timeout);
-		// 	}
-		// 	else if(re_rk == -3){//第三轮攻击
-		// 		int re_rk = repeat_attack(in,out,key,outex,n, nt, base, &appear_4_but_not_match,&no_chain_num,&more_chain_num,&one_chain_num,all_encrypt_num,
-		// 			later_fail_encrypt_num, w,e,&third_success_num_in_timeout,&third_fail_num_in_timeout,&third_timeout_num_in_timeout,&other_fail_num,&success_num_in_timeout,
-		// 			&fail_num_in_timeout,&timeout_num_in_timeout);
-		// 	}
-		// }
-
 		fpWrite = fopen("experiment.txt", "a+");
 		printf("second_encrypt_num:%d\n",all_encrypt_num[e]);
 		fprintf(fpWrite,"second_encrypt_num:%d\n",all_encrypt_num[e]);
@@ -284,7 +278,7 @@ int main(){
 		if(all_encrypt_num[i]<min)
 			min = all_encrypt_num[i];
 	}
-	FILE *fpWrite = fopen("experiment.txt", "a+");
+	fpWrite = fopen("experiment.txt", "a+");
 	printf("\n总实验次数:%d\n",Experment_num);
 	fprintf(fpWrite,"\n总实验次数:%d\n",Experment_num);
 	printf("share个数:%d\n",n);
@@ -312,6 +306,26 @@ int main(){
 	}
 	printf("\n");
 	fprintf(fpWrite,"\n");
+	fclose(fpWrite);
+	printf("使用的掩码方案为\n");
+	fpWrite = fopen("experiment.txt", "a+");
+	fprintf(fpWrite,"使用的掩码方案为\n");
+	if(is_rp10){
+		printf("is_rp10\n");
+		fprintf(fpWrite,"is_rp10\n");
+	}
+	else if(is_rp10_flr){
+		printf("is_rp10_flr\n");
+		fprintf(fpWrite,"is_rp10_flr\n");
+	}
+	else if(is_rp10_ilr){
+		printf("is_rp10_ilr\n");
+		fprintf(fpWrite,"is_rp10_ilr\n");
+	}
+	else if(is_rp10_ilr2){
+		printf("is_rp10_ilr2\n");
+		fprintf(fpWrite,"is_rp10_ilr2\n");
+	}
 	fclose(fpWrite);
 	return 0;
 }
@@ -390,5 +404,3 @@ int main(){
     run_aes_common_share(in,out,key,outex,n,&subbyte_cs_htable_word_inc,base,nt); 
    
   }*/
-
-

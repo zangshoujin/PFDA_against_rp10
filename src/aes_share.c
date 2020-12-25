@@ -1,7 +1,8 @@
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License version 2 as published
 // by the Free Software Foundation.
-
+#define NOLOC 0
+#define LOC 1
 #include "aes_share.h"
 #include "share.h"
 #include "aes.h"
@@ -12,10 +13,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-
-#define NOLOC 0
-#define LOC 1
-
 
 void print_state(byte *stateshare[16],int n,int round){
   printf("第%d轮:--share----------\n",round);
@@ -138,13 +135,13 @@ void addroundkey_share(byte *stateshare[16],byte *wshare[176],int round,int n)
     for(j=0;j<n;j++)
       stateshare[i][j]^=wshare[16*round+i][j];
 }
-
+ 
 void subbytestate_share(byte *stateshare[16],int n,void (*subbyte_share_call)(byte *,int))
 {
   for(int i=0;i<16;i++){//一个中间状态字节->n个shares
     subbyte_share_call(stateshare[i],n);
   }
-} 
+}
 
 void subbytestate_share_no_error(byte *stateshare[16],int n,void (*subbyte_share_call)(byte *,int))
 {
@@ -181,7 +178,7 @@ void aes_share_subkeys(byte in[16],byte out[16],byte *wshare[176],int n,void (*s
   int round=0;
 
   byte *stateshare[16];
-
+  
   for(i=0;i<16;i++)
   {
     stateshare[i]=(byte*) malloc(n*sizeof(byte));
@@ -192,13 +189,11 @@ void aes_share_subkeys(byte in[16],byte out[16],byte *wshare[176],int n,void (*s
   for(round=1;round<10;round++){ 
     subbytestate_share(stateshare,n,subbyte_share_call);
     shiftrows_share(stateshare,n);
-    if (loc==NOLOC){         //???0 == 0 只有列混合，没有轮密钥加？
+    if (loc==NOLOC)        //???0 == 0 只有列混合，没有轮密钥加？
       mixcolumns_share(stateshare,n);
-    }
-    else{
+    else
       mixcolumns_share_loc(stateshare,n);
-      addroundkey_share(stateshare,wshare,round,n);
-    }
+    addroundkey_share(stateshare,wshare,round,n);
   }
   subbytestate_share(stateshare,n,subbyte_share_call);
   shiftrows_share(stateshare,n);
@@ -227,13 +222,13 @@ void aes_share_subkeys_no_error(byte in[16],byte out[16],byte *wshare[176],int n
   for(round=1;round<10;round++){ 
     subbytestate_share_no_error(stateshare,n,subbyte_share_call);
     shiftrows_share(stateshare,n);
-    if (loc==NOLOC){         //???0 == 0 只有列混合，没有轮密钥加？
+    if (loc==NOLOC)         //???0 == 0 只有列混合，没有轮密钥加？
       mixcolumns_share(stateshare,n);
-    }
-    else{
+    
+    else
       mixcolumns_share_loc(stateshare,n);
       addroundkey_share(stateshare,wshare,round,n);
-    }
+    
   }
   subbytestate_share_no_error(stateshare,n,subbyte_share_call);
   shiftrows_share(stateshare,n);
@@ -416,20 +411,19 @@ void keyexpansion_share_no_error(byte key[16],byte *wshare[176],int n)
 
 int run_aes_share(byte in[16],byte out[16],byte key[16],byte outex[16],int n,void (*subbyte_share_call)(byte *,int),int nt,int base)
 {
+
   byte *wshare[176];
 
   keyexpansion_share(key,wshare,n);//使用share技术进行密钥扩展
 
   init_randcount();//初始化使用随机次数为0 
   clock_t start=clock();
-
   for(int i=0;i<1;i++)//这里原来i<nt,即nt<10,作者为了测试时间用
     aes_share_subkeys(in,out,wshare,n,subbyte_share_call,NOLOC);//加密轮函数
   clock_t end=clock();
 
   for(int i=0;i<176;i++)
     free(wshare[i]);
-
   int dt= (int) (end-start);//dt = 一次加密运行时间
   return dt;
 }
@@ -522,8 +516,8 @@ int run_aes_share_prg(byte in[16],byte out[16],byte key[16],byte *outex,int n,vo
 
   int dt=(int) end-start;
   report_time(dt,nt,base,get_randcount());
-  check_ciphertext(out,outex,16);
-  printf(" rprg=%d  prgcount=%d ",rprg,prgcount);
+  //check_ciphertext(out,outex,16);
+  //printf(" rprg=%d  prgcount=%d ",rprg,prgcount);
 
   return dt;
 }
@@ -564,7 +558,7 @@ int run_aes_share_mprg(byte in[16],byte out[16],byte key[16],byte *outex,int n,v
 
   int dt=(int) end-start;
   report_time(dt,nt,base,get_randcount());
-  check_ciphertext(out,outex,16);
+  //check_ciphertext(out,outex,16);
   printf(" randc=%d randi=%d tot=%d",rc*(n-1),ri*ni,(rc*(n-1)+ri*ni)*2);
   printf(" prgcount=%d ",get_mprgcount());
 
@@ -593,7 +587,7 @@ int run_aes_share_mprgmat(byte in[16],byte out[16],byte key[16],byte *outex,int 
 
   int dt=(int) end-start;
   report_time(dt,nt,base,get_randcount());
-  check_ciphertext(out,outex,16);
+  //check_ciphertext(out,outex,16);
   return dt;
 }
 
@@ -660,7 +654,7 @@ int run_aes_common_share(byte in[16],byte out[16],byte key[16],byte outex[16],in
 
   int dt=(int) (end-start);
   report_time(dt,nt,base,get_randcount());
-  check_ciphertext(out,outex,16);    
+  //check_ciphertext(out,outex,16);    
   
   return dt;
 }

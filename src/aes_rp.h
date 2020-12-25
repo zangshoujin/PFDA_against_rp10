@@ -1,9 +1,10 @@
 // This program is free software; you can redistribute it and/or modify it
 // under the terms of the GNU General Public License version 2 as published
 // by the Free Software Foundation.
+#ifndef __aes_rp__
+#define __aes_rp__
 
 #include "aes.h"
-
 byte multtable(byte x,byte y);
 void aes_rp(byte in[16],byte out[16],byte key[16]);
 
@@ -26,3 +27,6 @@ byte get_taffineValue(byte loc);
 void set_taffineValue(byte loc, byte value);
 byte taffine_copy[256];
 byte taffine[256];
+
+
+#endif

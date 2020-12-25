@@ -3,8 +3,8 @@
 // by the Free Software Foundation.
 
 #include "aes_rp.h"
-#include "aes.h"
 #include "share.h"
+#include "aes.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -317,6 +317,7 @@ byte tsmult[1024]={
 byte get_taffineValue(byte loc){  
 	return taffine[loc]; 
 }
+
 void set_taffineValue(byte loc, byte value){
 	taffine[loc] = value;
 }

@@ -1,11 +1,28 @@
 #include "encrypt.h"
 #include "print.h"
 
+void run_rp(byte in[16],byte out[16],byte key[16],byte outex[16],int n,int nt,int base){
+	if(is_rp10){
+		run_aes_share(in,out,key,outex,n,subbyte_rp_share,nt,base);
+	}
+	else if(is_rp10_flr){
+		int rprg=rprg_flr(n);
+		run_aes_share_prg(in,out,key,outex,n,&subbyte_rp_share_flr,base,nt,rprg);
+	}
+	else if(is_rp10_ilr){
+		int rprg=rprg_ilr(n);
+		run_aes_share_prg(in,out,key,outex,n,&subbyte_rp_share_ilr,base,nt,rprg);
+	}
+	else if(is_rp10_ilr2){
+		int rprg=rprg_ilr(n);
+		run_aes_share_prg(in,out,key,outex,n,&subbyte_rp_share_ilr2,base,nt,rprg);
+	}
+}
 
 int encrypt_find_different(byte in[16],byte out[16],byte key[16],byte outex[16],int n,int nt,int base,byte* delta,
 	byte differential_cipher_4_error[4][4],struct Different_Cipher dc[4],int relationship_delta_difference_cipher[4][4],
-	int diff_delta_count[4],int* appear_4_but_not_match,int* no_chain,int* more_chain,int* one_chain,byte cipher_verify[16]){//第九轮出错导致密文四个字节不同的差分数组
-	
+	int diff_delta_count[4],int* appear_4_but_not_match,int* no_chain,int* more_chain,int* one_chain,byte cipher_verify[16]
+	){//第九轮出错导致密文四个字节不同的差分数组
 	int error_local[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//记录错误的位置用
 	byte stored_cipher[Cipher_num][16];
 	int differential_cipher_4_error_count = 0;//是否已经找到了四对四个字节不同的密文对，取值范围0-3，大于4就break
@@ -19,10 +36,10 @@ int encrypt_find_different(byte in[16],byte out[16],byte key[16],byte outex[16],
 			fpWrite= fopen("encrypt_state.txt", "a+");
 			fprintf(fpWrite,"第%d次加密状态矩阵:--share----------\n",current_cipher_number);
 			fclose(fpWrite);
-			run_aes_share_print(in,out,key,outex,n,&subbyte_rp_share_print,nt,base);
+			run_rp(in,out,key,outex,n,nt,base);
 		}
 		else if(!Is_print){
-			run_aes_share(in,out,key,outex,n,&subbyte_rp_share,nt,base);
+			run_rp(in,out,key,outex,n,nt,base);
 		}
 		for(int i=0;i<16;i++){
 			stored_cipher[current_cipher_number][i] = out[i];
@@ -48,7 +65,7 @@ int encrypt_find_different(byte in[16],byte out[16],byte key[16],byte outex[16],
 						cipher_verify_flag = 1;
 						fpWrite = fopen("experiment.txt", "a+");
 						printf("cipher_verify:\ni:%d,current_cipher_number：%d\n",i,current_cipher_number);
-						fprintf(fpWrite,"cipher_verify:\ni:%d,current_cipher_number%d\n",i,current_cipher_number);
+						fprintf(fpWrite,"cipher_verify:\ni:%d,current_cipher_number%d\n",i,current_cipher_number);  
 						for(int i=0;i<16;i++){
 							printf("%02x ",cipher_verify[i]);
 							fprintf(fpWrite,"%02x ",cipher_verify[i]);
@@ -184,7 +201,7 @@ int encrypt_find_different(byte in[16],byte out[16],byte key[16],byte outex[16],
 					//fpWrite = fopen("encrypt_state.txt", "a+");
 					//fprintf(fpWrite,"第%d次加密状态矩阵:--share----------\n",current_cipher_number);
 					//fclose(fpWrite);
-					run_aes_share(in,out,key,outex,n,&subbyte_rp_share,nt,base); 
+					run_rp(in,out,key,outex,n,nt,base);
 					for(int i=0;i<16;i++){
 						stored_cipher[current_cipher_number][i] = out[i];
 					}

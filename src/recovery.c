@@ -25,7 +25,7 @@ int recovery_main_key(byte key_10round[16],byte main_key[16]){
 	for(int i=0;i<16;i++){
 		main_key[i] = w[i];
 	}
-	// printf("求得初始密钥是：\n");	
+	// printf("求得初始密钥是：\n")d;
 	// for(int i=0;i<16;i++){
 	// 	printf("%02x,",w[i]);
 	// 	if((i+1)%4==0)printf("\n");
@@ -36,8 +36,8 @@ int recovery_main_key(byte key_10round[16],byte main_key[16]){
 
 int recovery_10round_key(byte delta,byte differential_cipher_4_error[4][4],byte arr_delta[4][4],
 	int relationship_delta_difference_cipher[4][4],struct Different_Cipher dc[4],byte guess_key_10round[16][16],
-	byte key_10round[16],byte w[176],int diff_delta_count[4],int* success_num,int* fail_num,byte cipher_verify[16]
-	,byte in[16],int n,int nt,int base,byte reall_main_key[16],int *timeout_num,int *other_fail_num,int *success_num_in_timeout,
+	byte w[176],int diff_delta_count[4],int* success_num,int* fail_num,byte cipher_verify[16],byte in[16],int n,int nt,int base,
+	byte reall_main_key[16],int *timeout_num,int *other_fail_num,int *success_num_in_timeout,
 	int *fail_num_in_timeout,int *timeout_num_in_timeout){
 
 	int chain_num[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -100,7 +100,7 @@ int recovery_10round_key(byte delta,byte differential_cipher_4_error[4][4],byte 
 	printf("\nchain_sum:%lld\n",chain_sum);
     fprintf(fpWrite,"\nchain_sum:%lld\n",chain_sum);
     fclose(fpWrite);
-	int re_vok = verify_offline_key(guess_key_10round,key_10round,w,candidiate_key_count,success_num,fail_num,cipher_verify,
+	int re_vok = verify_offline_key(guess_key_10round,w,candidiate_key_count,success_num,fail_num,cipher_verify,
 		in,n,nt,base,reall_main_key,timeout_num,other_fail_num);
 
 	if(re_vok == 1 && chain_sum >= timeout_Num){

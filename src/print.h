@@ -2,7 +2,9 @@
 #define __print_h__
 typedef unsigned char byte;
 
+#include "aes_rp.h"
 #include "encrypt.h"
+#include <stdio.h>
 
 void print_4_by_4(byte temp[16]);
 void print_4_by_4_int(int temp[16]);

@@ -26,7 +26,8 @@ void addroundkey(byte *state,byte *w,int round);
 void setrcon(byte rcon[10]);
 void keyexpansion(byte *key,byte *w);
 
-void aes(byte in[16],byte out[16],byte key[16]);
+
+void aes(byte in[16],byte out[16],byte w[176]);
 int run_aes(void (*algo)(byte *,byte *,byte *),byte *in,byte *out,byte *key,byte *outex,int nt,int base,byte w[176]);
 void testaes();
 

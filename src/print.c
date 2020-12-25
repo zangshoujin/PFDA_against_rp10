@@ -1,7 +1,5 @@
-#include <stdio.h>
 #include "print.h"
-#include "aes_rp.h"
-#include "encrypt.h"
+
 typedef unsigned char byte;
 
 void print_4_by_4(byte temp[16]){

@@ -242,6 +242,35 @@ void keyexpansion(byte *key,byte *w)
   }
 }
 
+void keyexpansion_no_error(byte *key,byte *w)
+{
+  int i,j;
+  byte temp[4];
+  
+  byte rcon[10];
+  setrcon(rcon);
+ 
+  for(i=0;i<16;i++)
+    w[i]=key[i];
+
+  for(i=16;i<176;i+=4)
+  {
+    for(j=0;j<4;j++)
+      temp[j]=w[i-4+j];
+
+    if((i % 16)==0)
+    {
+      temp[0]=subbyte(w[i-3]) ^ rcon[i/16-1];
+      temp[1]=subbyte(w[i-2]);
+      temp[2]=subbyte(w[i-1]);
+      temp[3]=subbyte(w[i-4]);
+    }
+
+    for(j=0;j<4;j++)
+      w[i+j]=w[i+j-16] ^ temp[j];
+  }
+}
+
 void subbytestate(byte *state)
 {
   int i;

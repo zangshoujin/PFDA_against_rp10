@@ -13,19 +13,18 @@ int repeat_attack(byte in[16],byte out[16],byte key[16],byte outex[16],int n,int
         byte cipher_verify[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//验证的时候使用
         later_encrypt_num[i][e] = encrypt_find_different(in,out,key,outex,n,nt,base,&delta,differential_cipher_4_error,dc,
             relationship_delta_difference_cipher,diff_delta_count,appear_4_but_not_match,no_chain_num,more_chain_num,
-            one_chain_num,cipher_verify);	
+            one_chain_num, cipher_verify);
         all_encrypt_num[e] += later_encrypt_num[i][e];
         byte guess_key_10round[16][16]={{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                                     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                                     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
                                     {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
-        byte key_10round[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//存放求得的第十轮子密钥
         byte main_key[16]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//存放求得的初始密钥
         byte delta2 = mult(2 , delta);
         byte delta3 = mult(3 , delta);
         byte arr_delta[4][4] = {{delta2,delta3,delta,delta},{delta,delta2,delta3,delta},
             {delta,delta,delta2,delta3},{delta3,delta,delta,delta2}};
         return recovery_10round_key(delta,differential_cipher_4_error,arr_delta,relationship_delta_difference_cipher,dc,
-            guess_key_10round,key_10round,w,diff_delta_count,success_num,fail_num,cipher_verify,in,n,nt,base,key,
+            guess_key_10round,w,diff_delta_count,success_num,fail_num,cipher_verify,in,n,nt,base,key,
             timeout_num,other_fail_num,success_num_in_timeout,fail_num_in_timeout,timeout_in_timeout);
 }
